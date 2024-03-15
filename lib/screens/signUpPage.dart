@@ -92,7 +92,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
         const SizedBox(height: 10),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async{
+            try{
+              final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+            }catch(e){
+              print(e);
+            }
             Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
           },
           style: ElevatedButton.styleFrom(
