@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "436961639203",
+    "project_id": "serenibot-1d581",
+    "storage_bucket": "serenibot-1d581.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436961639203:android:eeab9a4cdd296625832a96",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpIFDILO_YPV7SpcYOAo8lvU0In_1MGeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436961639203:android:cb5a3e7760561500832a96",
+        "android_client_info": {
+          "package_name": "com.example.newproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpIFDILO_YPV7SpcYOAo8lvU0In_1MGeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436961639203:android:f527b52f0778b418832a96",
+        "android_client_info": {
+          "package_name": "com.example.sereni_chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpIFDILO_YPV7SpcYOAo8lvU0In_1MGeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
