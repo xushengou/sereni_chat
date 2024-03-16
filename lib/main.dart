@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
 import 'package:project/screens/chatNavScreen.dart';
@@ -8,9 +7,10 @@ import 'package:project/screens/homePage.dart';
 import 'package:project/screens/loginPage.dart';
 import 'package:project/screens/signUpPage.dart';
 import 'package:project/screens/settingsPage.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-void main() async{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

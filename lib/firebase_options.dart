@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDpIFDILO_YPV7SpcYOAo8lvU0In_1MGeo',
-    appId: '1:436961639203:android:f527b52f0778b418832a96',
+    appId: '1:436961639203:android:3919446410330b0a832a96',
     messagingSenderId: '436961639203',
     projectId: 'serenibot-1d581',
     storageBucket: 'serenibot-1d581.appspot.com',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project/screens/homePage.dart';
 
 import '../widgets/std_text_field.dart';
 import 'loginPage.dart';
@@ -93,12 +94,17 @@ class _SignUpPageState extends State<SignUpPage> {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async{
-            try{
-              final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-            }catch(e){
+            try {
+              FirebaseAuth.instance.createUserWithEmailAndPassword(
+                email: email,
+                password: password,
+              ).then((_) {
+                print('Successfully created user');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+              });
+            } catch (e) {
               print(e);
             }
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
@@ -136,4 +142,3 @@ class _SignUpPageState extends State<SignUpPage> {
       ],
     );
   }
-}
