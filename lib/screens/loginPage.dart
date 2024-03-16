@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
 import 'package:project/screens/signUpPage.dart';
-import '../widgets/std_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,6 +14,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String email = "";
   String password = "";
+  final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -55,23 +56,66 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        StdTextField(
-          returnValue: email,
-          hintText: "email",
-          textIcon: Icons.email,
-          obscure: false,
+
+        TextField(
+          onChanged: (value) {
+            email = value;
+          },
+          decoration: InputDecoration(
+            hintText: "email",
+            hintStyle: const TextStyle(
+              color: black,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: BorderSide.none,
+            ),
+            fillColor: Colors.blue.shade100, //
+            filled: true,
+            prefixIcon: Icon(Icons.email),
+          ),
+          enableSuggestions: false,
+          autocorrect: false,
         ),
+
+
         const SizedBox(height: 10),
-        StdTextField(
-          returnValue: password,
-          hintText: "password",
-          textIcon: Icons.lock,
-          obscure: false,
+
+
+        TextField(
+          onChanged: (value) {
+            password = value;
+          },
+          decoration: InputDecoration(
+            hintText: "password",
+            hintStyle: const TextStyle(
+              color: black,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: BorderSide.none,
+            ),
+            fillColor: Colors.blue.shade100, //
+            filled: true,
+            prefixIcon: Icon(Icons.lock),
+          ),
+          obscureText: true,
+          enableSuggestions: false,
+          autocorrect: false,
         ),
+
         const SizedBox(height: 10),
+
         ElevatedButton(
-          onPressed: () {
-            // Navigator.push(context, MaterialPageRoute(builder: (context) => const MyApp()));
+          onPressed: () async{
+            try{
+              final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
+              if(user != null){
+                Navigator.pushNamed(context, "homePage");
+              }
+            }catch(e){
+              print(e);
+            }
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),

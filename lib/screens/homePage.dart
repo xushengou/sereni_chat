@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
 import 'package:project/screens/chatNavScreen.dart';
-import 'package:project/screens/chatPage.dart';
 import 'package:project/screens/gratefulnessPage.dart';
 import 'package:project/screens/settingsPage.dart';
 
