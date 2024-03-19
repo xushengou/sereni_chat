@@ -167,7 +167,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
         ElevatedButton(
           onPressed: () async {
-            _createUser();
             try {
               _auth.createUserWithEmailAndPassword(
                 email: email,
@@ -181,6 +180,7 @@ class _SignUpPageState extends State<SignUpPage> {
             } catch (e) {
               print(e);
             }
+            _createUser();
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),

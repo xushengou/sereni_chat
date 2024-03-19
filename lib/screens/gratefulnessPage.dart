@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:project/color_const.dart';
+import 'package:project/widgets/list_box_widget.dart';
+// import 'package:intl/intl.dart';
 
 class GratefulnessPage extends StatefulWidget {
   const GratefulnessPage({super.key});
@@ -13,6 +15,9 @@ class GratefulnessPage extends StatefulWidget {
 
 class _GratefulnessPageState extends State<GratefulnessPage> {
   var gratefulnessList = [];
+  // current date in mm/dd/yyyy
+  // DateTime now = DateTime.now();
+  // String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
 
   @override
   Widget build(BuildContext context) {
@@ -34,16 +39,17 @@ class _GratefulnessPageState extends State<GratefulnessPage> {
               padding: const EdgeInsets.all(8),
               itemCount: gratefulnessList.length,
               itemBuilder: (BuildContext context, int index) {
-                return SizedBox(
-                  height: 50,
-                  child: Text(
-                    '${index + 1}) ${gratefulnessList[index]}',
-                    style: const TextStyle(
-                      color: secondary_color,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                );
+                return ListBoxWidget(title: '${index + 1}. ${gratefulnessList[index]}', date: "03/19/2024", username: "username", marginVal: 5.0);
+                // SizedBox(
+                //   height: 50,
+                //   child: Text(
+                //     '${index + 1}) ${gratefulnessList[index]}',
+                //     style: const TextStyle(
+                //       color: secondary_color,
+                //       fontSize: 20.0,
+                //     ),
+                //   ),
+                // );
               },
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(),
