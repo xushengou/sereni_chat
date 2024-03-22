@@ -23,7 +23,7 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _usernameController = TextEditingController();
 
   @override
-  void dispose(){
+  void dispose() {
     _usernameController.dispose();
     super.dispose();
   }
@@ -38,7 +38,9 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _isUserCreating == true ? CircularProgressIndicator() : Container(),
+              _isUserCreating == true
+                  ? CircularProgressIndicator()
+                  : Container(),
               _logoName(context),
               _inputField(context),
               _login(context),
@@ -92,9 +94,7 @@ class _SignUpPageState extends State<SignUpPage> {
           enableSuggestions: false,
           autocorrect: false,
         ),
-
         const SizedBox(height: 10),
-
         TextField(
           onChanged: (value) {
             email = value;
@@ -116,9 +116,7 @@ class _SignUpPageState extends State<SignUpPage> {
           enableSuggestions: false,
           autocorrect: false,
         ),
-
         const SizedBox(height: 10),
-
         TextField(
           onChanged: (value) {
             password = value;
@@ -140,11 +138,9 @@ class _SignUpPageState extends State<SignUpPage> {
           enableSuggestions: false,
           autocorrect: false,
         ),
-
         const SizedBox(height: 10),
-
         TextField(
-          onChanged: (value){},
+          onChanged: (value) {},
           decoration: InputDecoration(
             hintText: "re-enter password",
             hintStyle: const TextStyle(
@@ -162,25 +158,28 @@ class _SignUpPageState extends State<SignUpPage> {
           enableSuggestions: false,
           autocorrect: false,
         ),
-
         const SizedBox(height: 10),
-
         ElevatedButton(
           onPressed: () async {
             try {
-              _auth.createUserWithEmailAndPassword(
+              _auth
+                  .createUserWithEmailAndPassword(
                 email: email,
                 password: password,
-              )
-                  .then((_) {
+              ).then((_) {
                 print('Successfully created user');
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const HomePage()));
+                // _createUser();
+                DatabaseHandler.createUser(UserModel(
+                  username: _usernameController.text,
+                )).then((value) {
+                  Navigator.pop(context);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const HomePage()));
+                });
               });
             } catch (e) {
               print(e);
             }
-            _createUser();
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
@@ -220,20 +219,20 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  _createUser(){
-    setState(() => _isUserCreating = true);
-    Future.delayed(const Duration(milliseconds: 1000)).then((value) {
-      if (_usernameController.text.isEmpty){
-        setState(() => _isUserCreating = false);
-        return;
-      }
-
-      DatabaseHandler.createUser(UserModel(
-        username: _usernameController.text,
-      )).then((value) {
-        _isUserCreating = false;
-        Navigator.pop(context);
-      });
-    });
-  }
+  // _createUser() {
+  //   setState(() => _isUserCreating = true);
+  //   Future.delayed(const Duration(milliseconds: 1000)).then((value) {
+  //     if (_usernameController.text.isEmpty) {
+  //       setState(() => _isUserCreating = false);
+  //       return;
+  //     }
+  //
+  //     DatabaseHandler.createUser(UserModel(
+  //       username: _usernameController.text,
+  //     )).then((value) {
+  //       _isUserCreating = false;
+  //       Navigator.pop(context);
+  //     });
+  //   });
+  // }
 }

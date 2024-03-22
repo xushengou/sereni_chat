@@ -23,6 +23,12 @@ class DatabaseHandler{
   //   String uid = _getUid();
   //
   // }
+  static Stream<List<UserModel>> getUsername() {
+    String uid = _getUid();
+    final usernameCollection = FirebaseFirestore.instance.collection(uid);
+    return usernameCollection.snapshots().map((querySnapshot) =>
+        querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
+  }
   
   static String _getUid(){
     final User? user = FirebaseAuth.instance.currentUser;
