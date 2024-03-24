@@ -19,6 +19,10 @@ class _SignUpPageState extends State<SignUpPage> {
   String email = "";
   String password = "";
 
+  bool _validateUsername = false;
+  bool _validateEmail = false;
+  bool _validatePassword = false;
+
   bool _isUserCreating = false;
   TextEditingController _usernameController = TextEditingController();
 
@@ -89,8 +93,8 @@ class _SignUpPageState extends State<SignUpPage> {
             fillColor: Colors.blue.shade100, //
             filled: true,
             prefixIcon: Icon(Icons.person),
+            errorText: _validateUsername ? "Username Can't be Empty" : null,
           ),
-          obscureText: false,
           enableSuggestions: false,
           autocorrect: false,
         ),
@@ -111,8 +115,8 @@ class _SignUpPageState extends State<SignUpPage> {
             fillColor: Colors.blue.shade100, //
             filled: true,
             prefixIcon: Icon(Icons.email),
+            errorText: _validateEmail ? "Email Can't be Empty" : null,
           ),
-          obscureText: false,
           enableSuggestions: false,
           autocorrect: false,
         ),
@@ -166,11 +170,13 @@ class _SignUpPageState extends State<SignUpPage> {
                   .createUserWithEmailAndPassword(
                 email: email,
                 password: password,
-              ).then((_) {
+              ).then((userCred) {
+                userCred.user!.updateDisplayName(_usernameController.text);
                 print('Successfully created user');
                 // _createUser();
                 DatabaseHandler.createUser(UserModel(
-                  username: _usernameController.text,
+                  firstName: "",
+                  lastName: "",
                 )).then((value) {
                   Navigator.pop(context);
                   Navigator.push(context,
@@ -218,21 +224,4 @@ class _SignUpPageState extends State<SignUpPage> {
       ],
     );
   }
-
-  // _createUser() {
-  //   setState(() => _isUserCreating = true);
-  //   Future.delayed(const Duration(milliseconds: 1000)).then((value) {
-  //     if (_usernameController.text.isEmpty) {
-  //       setState(() => _isUserCreating = false);
-  //       return;
-  //     }
-  //
-  //     DatabaseHandler.createUser(UserModel(
-  //       username: _usernameController.text,
-  //     )).then((value) {
-  //       _isUserCreating = false;
-  //       Navigator.pop(context);
-  //     });
-  //   });
-  // }
 }

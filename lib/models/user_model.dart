@@ -1,20 +1,20 @@
 import "package:cloud_firestore/cloud_firestore.dart";
 
 class UserModel{
-  final String? id;
-  final String? username;
+  final String? firstName;
+  final String? lastName;
 
-  UserModel({this.id, this.username});
+  UserModel({this.firstName, this.lastName});
 
   factory UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot){
     return UserModel(
-      id: snapshot['id'],
-      username: snapshot['username'],
+      firstName: snapshot['first_name'],
+      lastName: snapshot['last_name'],
     );
   }
 
   Map<String, dynamic> toDocument() => {
-    "id": id,
-    "username": username,
+    "first_name": firstName,
+    "last_name": lastName,
   };
 }

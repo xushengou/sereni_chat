@@ -3,6 +3,7 @@ import 'package:project/color_const.dart';
 import 'package:project/screens/chatNavScreen.dart';
 import 'package:project/screens/gratefulnessPage.dart';
 import 'package:project/screens/settingsPage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,7 +13,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var userName = "Carson Ou";
+
+  // String? userName = FirebaseAuth.instance.currentUser?.displayName;
   List<String> dailyOptions = <String>["Awesome!", "It's Okay~", "Horriable!"];
   var _dailyValue;
   List<String> tips = <String>[
@@ -44,7 +46,8 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                userName,
+                // userName!.length > 15 ? userName!.substring(0, 15)+'...' : userName!,
+                "Hello world",
                 style: const TextStyle(
                   color: secondary_color,
                   fontSize: 30.0,

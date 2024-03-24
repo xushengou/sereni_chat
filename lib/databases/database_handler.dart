@@ -8,9 +8,9 @@ class DatabaseHandler{
   //create collection
   static Future<void> createUser(UserModel user) async{
     String uid = _getUid();
-    final userCollection = FirebaseFirestore.instance.collection(uid);
-    final id = userCollection.doc().id;
-    final newUser = UserModel(id: id, username: user.username).toDocument();
+    final userCollection = FirebaseFirestore.instance.collection("User data");
+    final id = userCollection.doc(uid).id;
+    final newUser = UserModel(firstName: "", lastName: "").toDocument();
 
     try{
       userCollection.doc(id).set(newUser);
@@ -19,16 +19,8 @@ class DatabaseHandler{
     }
   }
 
-  // static String getUsername(){
-  //   String uid = _getUid();
-  //
-  // }
-  static Stream<List<UserModel>> getUsername() {
-    String uid = _getUid();
-    final usernameCollection = FirebaseFirestore.instance.collection(uid);
-    return usernameCollection.snapshots().map((querySnapshot) =>
-        querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
-  }
+  // get Chats
+
   
   static String _getUid(){
     final User? user = FirebaseAuth.instance.currentUser;
