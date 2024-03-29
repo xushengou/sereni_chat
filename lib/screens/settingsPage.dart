@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:project/screens/chatNavScreen.dart';
-import 'package:project/screens/chatPage.dart';
 import 'package:project/screens/homePage.dart';
 
 import '../color_const.dart';
@@ -13,16 +12,16 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
   void onTabTapped(int index) {
-    if(index == 0){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
-    }
-    else if(index == 1){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatNavScreen()));
-    }
-    else{
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage()));
+    if (index == 0) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const HomePage()));
+    } else if (index == 1) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const ChatNavScreen()));
+    } else {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()));
     }
   }
 
@@ -38,6 +37,287 @@ class _SettingsPageState extends State<SettingsPage> {
           style: TextStyle(
             color: secondary_color,
             fontSize: 30.0,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        physics: const ScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: IconButton.outlined(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsPage()));
+                  },
+                  icon: const Icon(
+                    Icons.person,
+                  ),
+                  iconSize: 150.0,
+                  style: ButtonStyle(
+                    side: MaterialStateProperty.all(
+                      const BorderSide(
+                          color: Colors.black,
+                          width: 2.0,
+                          style: BorderStyle.solid),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(
+                height: 20.0,
+              ),
+
+              // Account settings
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Account Settings",
+                  style: TextStyle(
+                    color: mainGrey,
+                    fontSize: 10.0,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    border: Border.all(color: mainGrey),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.person,
+                              color: whiteGrey,
+                              size: 30.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: Text(
+                                "Account",
+                                style: TextStyle(
+                                  color: whiteGrey,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: whiteGrey,
+                                size: 30.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: mainGrey,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.person,
+                              color: whiteGrey,
+                              size: 30.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: Text(
+                                "Account",
+                                style: TextStyle(
+                                  color: whiteGrey,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: whiteGrey,
+                                size: 30.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: mainGrey,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.privacy_tip_outlined,
+                              color: whiteGrey,
+                              size: 30.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: Text(
+                                "Privacy & Safety",
+                                style: TextStyle(
+                                  color: whiteGrey,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: whiteGrey,
+                                size: 30.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: mainGrey,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(
+                height: 20.0,
+              ),
+
+              // App Settings
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "App Settings",
+                  style: TextStyle(
+                    color: mainGrey,
+                    fontSize: 10.0,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    border: Border.all(color: mainGrey),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.palette,
+                              color: whiteGrey,
+                              size: 30.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: Text(
+                                "Appearance",
+                                style: TextStyle(
+                                  color: whiteGrey,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: whiteGrey,
+                                size: 30.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: mainGrey,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.accessibility_new,
+                              color: whiteGrey,
+                              size: 30.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: Text(
+                                "Accessibility",
+                                style: TextStyle(
+                                  color: whiteGrey,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: whiteGrey,
+                                size: 30.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: mainGrey,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.translate_outlined,
+                              color: whiteGrey,
+                              size: 30.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20.0),
+                              child: Text(
+                                "Language",
+                                style: TextStyle(
+                                  color: whiteGrey,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                color: whiteGrey,
+                                size: 30.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          color: mainGrey,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

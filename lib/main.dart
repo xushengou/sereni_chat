@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: primary_color,
         ),
       ),
-      initialRoute: 'loginPage',
+      initialRoute: 'settingPage',
       routes: {
         'homePage': (context) => const HomePage(),
         'chatPage': (context) => const ChatPage(),
