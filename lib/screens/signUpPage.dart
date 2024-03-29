@@ -171,9 +171,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 email: email,
                 password: password,
               ).then((userCred) {
+                // update username (useful later!) >:)
                 userCred.user!.updateDisplayName(_usernameController.text);
                 print('Successfully created user');
-                // _createUser();
                 DatabaseHandler.createUser(UserModel(
                   firstName: "",
                   lastName: "",

@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project/models/chat_model.dart';
+import 'package:project/screens/chatPage.dart';
 import 'package:project/screens/homePage.dart';
 import 'package:project/screens/settingsPage.dart';
 
 import '../color_const.dart';
+import '../databases/database_handler.dart';
 import '../widgets/list_box_widget.dart';
 
 class ChatNavScreen extends StatefulWidget {
@@ -28,6 +32,26 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
   }
 
   var chats = [];
+
+  String _displayName = '';
+  @override
+  void initState() {
+    super.initState();
+    // Retrieve current user's display name when the widget is initialized
+    getUserDisplayName();
+  }
+
+  Future<void> getUserDisplayName() async {
+    // Get the current user from Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Retrieve user's display name
+    if (user != null) {
+      setState(() {
+        _displayName = user.displayName ?? 'No name';
+      });
+    }
+  }
 
   // current date in mm/dd/yyyy
   // String currentDate = DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now());
@@ -70,14 +94,19 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                         actions: <Widget>[
                           TextButton(
                             onPressed: (){
-                              chats.add("${DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now())} AI");
-                              Navigator.pop(context, 'AiBot');
+                              DatabaseHandler.createChat(ChatModel()).then((value) {
+                                Navigator.pop(context);
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => const ChatPage()));
+                                print(ChatModel().cid);
+                              });
+                              chats.add("AI: ${chats.length}");
                             },
                             child: const Text('AiBot'),
                           ),
                           TextButton(
                             onPressed: () {
-                              chats.add("${DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now())} Person");
+                              chats.add("Person: ${chats.length}");
                               Navigator.pop(context, 'Find');
                             },
                             child: const Text('Find'),
@@ -101,7 +130,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
             padding: const EdgeInsets.all(8),
             itemCount: chats.length,
             itemBuilder: (BuildContext context, int index) {
-              return ListBoxWidget(title: '${index + 1}. ${chats[index]}', date: "03/19/2024", username: "username", marginVal: 5.0);
+              return ListBoxWidget(title: '${index + 1}. ${chats[index]}', date: "03/19/2024", username: _displayName, marginVal: 5.0);
             },
             separatorBuilder: (BuildContext context, int index) =>
             const Divider(),

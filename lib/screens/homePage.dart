@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  // String? userName = FirebaseAuth.instance.currentUser?.displayName;
+  String _displayName = '';
   List<String> dailyOptions = <String>["Awesome!", "It's Okay~", "Horriable!"];
   var _dailyValue;
   List<String> tips = <String>[
@@ -22,6 +22,25 @@ class _HomePageState extends State<HomePage> {
     "Share out your trouble",
     "",
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Retrieve current user's display name when the widget is initialized
+    getUserDisplayName();
+  }
+
+  Future<void> getUserDisplayName() async {
+    // Get the current user from Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Retrieve user's display name
+    if (user != null) {
+      setState(() {
+        _displayName = user.displayName ?? 'No name';
+      });
+    }
+  }
 
   void onTabTapped(int index) {
     if(index == 0){
@@ -46,8 +65,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                // userName!.length > 15 ? userName!.substring(0, 15)+'...' : userName!,
-                "Hello world",
+                _displayName.length > 15 ? '${_displayName.substring(0, 15)}...' : _displayName,
                 style: const TextStyle(
                   color: secondary_color,
                   fontSize: 30.0,
