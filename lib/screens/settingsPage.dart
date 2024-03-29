@@ -40,60 +40,60 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const ScrollPhysics(),
-        child: Padding(
+      body: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: IconButton.outlined(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SettingsPage()));
-                  },
-                  icon: const Icon(
-                    Icons.person,
-                  ),
-                  iconSize: 150.0,
-                  style: ButtonStyle(
-                    side: MaterialStateProperty.all(
-                      const BorderSide(
-                          color: Colors.black,
-                          width: 2.0,
-                          style: BorderStyle.solid),
+          child: SingleChildScrollView(
+            physics: const ScrollPhysics(),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: IconButton.outlined(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SettingsPage()));
+                    },
+                    icon: const Icon(
+                      Icons.person,
+                    ),
+                    iconSize: 150.0,
+                    style: ButtonStyle(
+                      side: MaterialStateProperty.all(
+                        const BorderSide(
+                            color: Colors.black,
+                            width: 2.0,
+                            style: BorderStyle.solid),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              const SizedBox(
-                height: 20.0,
-              ),
+                const SizedBox(
+                  height: 20.0,
+                ),
 
-              // Account settings
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Account Settings",
-                  style: TextStyle(
-                    color: mainGrey,
-                    fontSize: 10.0,
+                // Account settings
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Account Settings",
+                    style: TextStyle(
+                      color: mainGrey,
+                      fontSize: 10.0,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              Expanded(
-                child: Container(
+                const SizedBox(
+                  height: 10.0,
+                ),
+                Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
                     border: Border.all(color: mainGrey),
                   ),
+                  width: double.maxFinite,
                   child: const Padding(
                     padding: EdgeInsets.all(20.0),
                     child: Column(
@@ -192,32 +192,31 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                 ),
-              ),
 
-              const SizedBox(
-                height: 20.0,
-              ),
+                const SizedBox(
+                  height: 20.0,
+                ),
 
-              // App Settings
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "App Settings",
-                  style: TextStyle(
-                    color: mainGrey,
-                    fontSize: 10.0,
+                // App Settings
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "App Settings",
+                    style: TextStyle(
+                      color: mainGrey,
+                      fontSize: 10.0,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              Expanded(
-                child: Container(
+                const SizedBox(
+                  height: 10.0,
+                ),
+                Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
                     border: Border.all(color: mainGrey),
                   ),
+                  width: double.maxFinite,
                   child: const Padding(
                     padding: EdgeInsets.all(20.0),
                     child: Column(
@@ -316,10 +315,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 2,
