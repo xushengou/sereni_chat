@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project/color_const.dart';
 import 'package:project/screens/chatNavScreen.dart';
 import 'package:project/screens/chatPage.dart';
@@ -15,6 +16,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // await dotenv.load(fileName: "assets/.env");
   runApp(const MyApp());
 }
 
