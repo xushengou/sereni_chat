@@ -99,6 +99,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) => const ChatPage()));
                                 print(ChatModel().cid);
+                                // DatabaseHandler._updateCid(ChatModel().cid);
                               });
                               chats.add("AI: ${chats.length}");
                             },
