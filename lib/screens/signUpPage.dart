@@ -177,6 +177,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 DatabaseHandler.createUser(UserModel(
                   firstName: "",
                   lastName: "",
+                  cids: [],
                 )).then((value) {
                   Navigator.pop(context);
                   Navigator.push(context,

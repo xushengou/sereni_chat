@@ -47,8 +47,8 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
       await _firestore.collection("Chat Rooms").doc(roomId).update({
         'uid2': uid,
       });
-      final userCollection = FirebaseFirestore.instance.collection("User data").doc(uid).collection("cids");
-      await userCollection.doc(roomId).set({});
+      final docRef = FirebaseFirestore.instance.collection("User Data").doc(uid);
+      docRef.update({"cids": [roomId]});
       return roomId;
     } else {
       // No open rooms, create a new one.
@@ -57,8 +57,8 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
         'uid2': "",
         'messages': [],
       });
-      final userCollection = FirebaseFirestore.instance.collection("User data").doc(uid).collection("cids");
-      await userCollection.doc(newRoomDoc.id).set({});
+      final docRef = FirebaseFirestore.instance.collection("User Data").doc(uid);
+      docRef.update({"cids": [newRoomDoc.id]});
       return newRoomDoc.id;
     }
   }
