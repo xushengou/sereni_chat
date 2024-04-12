@@ -25,16 +25,10 @@ class DatabaseHandler{
     String uid = _getUid();
     final chatCollection = FirebaseFirestore.instance.collection("Chat data");
     final cid = chatCollection.doc().id;
-    final newChat = ChatModel(cid: cid, members: [uid], messages: []).toDocument();
+    final newChat = ChatModel(cid: cid, members: [uid]).toDocument();
 
-    final userCollection = FirebaseFirestore.instance.collection("User data").doc(uid);
-    userCollection.update({
-      'cids': FieldValue.arrayUnion([cid])
-    }).then((_) {
-      print("New chat added to the list successfully");
-    }).catchError((error) {
-      print("Error adding new chat to the list: $error");
-    });
+    final userCollection = FirebaseFirestore.instance.collection("User data").doc(uid).collection("cids");
+    await userCollection.doc(cid).set({}); // updates user data's cids list value
 
     try{
       chatCollection.doc(cid).set(newChat);

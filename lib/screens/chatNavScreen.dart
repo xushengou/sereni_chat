@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +19,10 @@ class ChatNavScreen extends StatefulWidget {
 }
 
 class _ChatNavScreenState extends State<ChatNavScreen> {
+
+  var chats = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   void onTabTapped(int index) {
     if (index == 0) {
       Navigator.push(
@@ -31,7 +36,32 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
     }
   }
 
-  var chats = [];
+  Future<String> findOrCreateRoom() async {
+    final openRoomQuery = await _firestore.collection("Chat Rooms").where('uid2', isEqualTo: "").limit(1).get();
+    var uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if(openRoomQuery.docs.isNotEmpty){
+      // An open room exists
+      var roomId = openRoomQuery.docs.first.id;
+      // Join the open room by setting uid2 to the current user's UID.
+      await _firestore.collection("Chat Rooms").doc(roomId).update({
+        'uid2': uid,
+      });
+      final userCollection = FirebaseFirestore.instance.collection("User data").doc(uid).collection("cids");
+      await userCollection.doc(roomId).set({});
+      return roomId;
+    } else {
+      // No open rooms, create a new one.
+      var newRoomDoc = await _firestore.collection("Chat Rooms").add({
+        'uid1': uid,
+        'uid2': "",
+        'messages': [],
+      });
+      final userCollection = FirebaseFirestore.instance.collection("User data").doc(uid).collection("cids");
+      await userCollection.doc(newRoomDoc.id).set({});
+      return newRoomDoc.id;
+    }
+  }
 
   String _displayName = '';
   @override
@@ -94,13 +124,13 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                         actions: <Widget>[
                           TextButton(
                             onPressed: (){
-                              DatabaseHandler.createChat(ChatModel()).then((value) {
-                                Navigator.pop(context);
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => const ChatPage()));
-                                print(ChatModel().cid);
-                                // DatabaseHandler._updateCid(ChatModel().cid);
-                              });
+                              // DatabaseHandler.createChat(ChatModel()).then((value) {
+                              //   // DatabaseHandler._updateCid(ChatModel().cid);
+                              // });
+                              var cid = findOrCreateRoom();
+                              Navigator.pop(context);  // remove the pop up screen
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => ChatPage()));
                               chats.add("AI: ${chats.length}");
                             },
                             child: const Text('AiBot'),

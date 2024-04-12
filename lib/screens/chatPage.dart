@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:project/color_const.dart';
 import '../widgets/chattxt_widget.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 
 class ChatPage extends StatefulWidget {
+
   const ChatPage({super.key});
 
   @override
@@ -14,19 +15,10 @@ class ChatPage extends StatefulWidget {
 
 class _EditChatPageState extends State<ChatPage> {
   TextEditingController _bodyController = TextEditingController();
+  ScrollController _scrollController = ScrollController();
 
-  List<Message> messages = [
-    Message(
-      text: "Hello there!",
-      date: DateTime.now().subtract(Duration(minutes: 1)),
-      isSentByMe: true,
-    ),
-    Message(
-      text: "Hello World!",
-      date: DateTime.now().subtract(Duration(minutes: 1)),
-      isSentByMe: false,
-    ),
-  ];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,52 +38,42 @@ class _EditChatPageState extends State<ChatPage> {
           ),
         ),
         body: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: GroupedListView<Message, DateTime>(
-                padding: const EdgeInsets.all(8),
-                reverse: true, // Important
-                order: GroupedListOrder.DESC,
-                useStickyGroupSeparators: true,
-                floatingHeader: true,
-                elements: messages,
-                groupBy: (message) => DateTime(
-                  message.date.year,
-                  message.date.month,
-                  message.date.day,
-                ),
-                groupHeaderBuilder: (Message message) => SizedBox(
-                  height: 100.0,
-                  child: Center(
-                    child: Card(
-                      color: shaded_blue,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          DateFormat.yMMMd().format(message.date),
-                          style: const TextStyle(
-                            color: secondary_color,
-                          ),
-                        ),
-                      ),
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>( // inside the <> you enter the type of your stream
+                stream: _firestore.collection("Chat Rooms").snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  var messages = snapshot.data!.docs;
+                  List<MessageBubble> messageWidgets = [];
+                  for (var message in messages) {
+                    var messageText = message['mesage'];
+                    var isMe = message['isMe'];
+                    var timeStamp = message['timestamp'];
+                    var messageWidget = MessageBubble(
+                      messageText,
+                      isMe,
+                      timeStamp,
+                    );
+                    messageWidgets.add(messageWidget);
+                  }
+
+                  return ListView(
+                    controller: _scrollController,
+                    reverse: true,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 20,
                     ),
-                  ),
-                ),
-                itemBuilder: (context, Message message) => Align(
-                  alignment: message.isSentByMe
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: Card(
-                    elevation: 8,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(message.text),
-                    ),
-                  ),
-                ),
+                    children: messageWidgets,
+                  );
+                },
               ),
             ),
+
+
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
               child: Expanded(
@@ -117,12 +99,12 @@ class _EditChatPageState extends State<ChatPage> {
                           ),
                         ),
                         onPressed: () {
-                          final message = Message(
-                            text: _bodyController.text,
-                            date: DateTime.now(),
-                            isSentByMe: true,
-                          );
-                          setState(() => messages.add(message));
+                          final message = {
+                            'message': _bodyController.text,
+                            'isMe': true,
+                            'timestamp': DateTime.now(),
+                          };
+                          setState(() => _firestore.collection('Chat data').doc().collection("messages").add(message));
                           _bodyController.clear();
                         },
                         child: const Icon(Icons.arrow_upward),
@@ -142,10 +124,48 @@ class _EditChatPageState extends State<ChatPage> {
   }
 }
 
-class Message {
-  late String text;
-  late DateTime date;
-  late bool isSentByMe;
+// finish this
+class MessageBubble extends StatelessWidget{
+  final String message;
+  final bool isMe;
+  final DateTime timestamp;
 
-  Message({required this.text, required this.date, required this.isSentByMe});
-}
+  const MessageBubble(this.message, this.isMe, this.timestamp, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 100.0,
+          child: Center(
+            child: Card(
+              color: shaded_blue,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  DateFormat.yMMMd().format(timestamp),
+                  style: const TextStyle(
+                    color: secondary_color,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        Align(
+          alignment: isMe
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          child: Card(
+            elevation: 8,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(message),
+            ),
+          ),
+        ),
+      ],
+    );
+  }}
