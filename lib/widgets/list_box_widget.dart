@@ -34,7 +34,7 @@ class ListBoxWidget extends StatelessWidget {
             children: [
               //Title
               Text(
-                "${title}".length > 10 ? "${title}".substring(0, 10)+'...' : "${title}",
+                "${title}".length > 20 ? "${title}".substring(0, 20)+'...' : "${title}",
                 style: const TextStyle(
                   color: secondary_color,
                   fontSize: 25,

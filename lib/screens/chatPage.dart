@@ -7,7 +7,9 @@ import 'package:intl/intl.dart';
 
 class ChatPage extends StatefulWidget {
 
-  const ChatPage({super.key});
+  final String cid;
+
+  const ChatPage({super.key, required this.cid});
 
   @override
   State<ChatPage> createState() => _EditChatPageState();
@@ -39,16 +41,52 @@ class _EditChatPageState extends State<ChatPage> {
         body: Column(
           children: [
             Expanded(
-              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>( // inside the <> you enter the type of your stream
-                stream: _firestore.collection("Chat Rooms").snapshots(),
+              // child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>( // inside the <> you enter the type of your stream
+              //   stream: _firestore.collection("Chat Rooms").snapshots(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.hasData) {
+              //       return const Center(child: CircularProgressIndicator());
+              //     }
+              //     var messages = snapshot.data!.docs;
+              //     List<MessageBubble> messageWidgets = [];
+              //     for (var message in messages) {
+              //       var messageText = message['mesage'];
+              //       var isMe = message['isMe'];
+              //       var timeStamp = message['timestamp'];
+              //       var messageWidget = MessageBubble(
+              //         messageText,
+              //         isMe,
+              //         timeStamp,
+              //       );
+              //       messageWidgets.add(messageWidget);
+              //     }
+              //
+              //     return ListView(
+              //       controller: _scrollController,
+              //       reverse: true,
+              //       padding: const EdgeInsets.symmetric(
+              //         horizontal: 10,
+              //         vertical: 20,
+              //       ),
+              //       children: messageWidgets,
+              //     );
+              //   },
+              // ),
+              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: _firestore.collection("Chat Rooms").doc(widget.cid).collection("Messages").orderBy('timestamp', descending: true).snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
                   }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
                   var messages = snapshot.data!.docs;
                   List<MessageBubble> messageWidgets = [];
                   for (var message in messages) {
-                    var messageText = message['mesage'];
+                    var messageText = message['message']; // Make sure to use the correct field name
                     var isMe = message['isMe'];
                     var timeStamp = message['timestamp'];
                     var messageWidget = MessageBubble(
@@ -104,6 +142,7 @@ class _EditChatPageState extends State<ChatPage> {
                             'timestamp': DateTime.now(),
                           };
                           setState(() => _firestore.collection('Chat data').doc().collection("messages").add(message));
+                          // setState(() => _firestore.collection('Chat Rooms').doc(widget.cid);
                           _bodyController.clear();
                         },
                         child: const Icon(Icons.arrow_upward),

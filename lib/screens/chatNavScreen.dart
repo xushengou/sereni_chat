@@ -19,7 +19,6 @@ class ChatNavScreen extends StatefulWidget {
 }
 
 class _ChatNavScreenState extends State<ChatNavScreen> {
-
   var chats = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -37,18 +36,25 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
   }
 
   Future<String> findOrCreateRoom() async {
-    final openRoomQuery = await _firestore.collection("Chat Rooms").where('uid2', isEqualTo: "").limit(1).get();
+    final openRoomQuery = await _firestore
+        .collection("Chat Rooms")
+        .where('uid2', isEqualTo: "")
+        .limit(1)
+        .get();
     var uid = FirebaseAuth.instance.currentUser?.uid;
 
-    if(openRoomQuery.docs.isNotEmpty){
+    if (openRoomQuery.docs.isNotEmpty) {
       // An open room exists
       var roomId = openRoomQuery.docs.first.id;
       // Join the open room by setting uid2 to the current user's UID.
       await _firestore.collection("Chat Rooms").doc(roomId).update({
         'uid2': uid,
       });
-      final docRef = FirebaseFirestore.instance.collection("User Data").doc(uid);
-      docRef.update({"cids": [roomId]});
+      final docRef =
+          FirebaseFirestore.instance.collection("User Data").doc(uid);
+      docRef.update({
+        "cids": [roomId]
+      });
       return roomId;
     } else {
       // No open rooms, create a new one.
@@ -57,10 +63,32 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
         'uid2': "",
         'messages': [],
       });
-      final docRef = FirebaseFirestore.instance.collection("User Data").doc(uid);
-      docRef.update({"cids": [newRoomDoc.id]});
+      final docRef =
+          FirebaseFirestore.instance.collection("User Data").doc(uid);
+      docRef.update({
+        "cids": FieldValue.arrayUnion([newRoomDoc.id])
+      });
       return newRoomDoc.id;
     }
+  }
+
+  Future<String> createRoom() async {
+    final openRoomQuery = await _firestore
+        .collection("Chat Rooms")
+        .where('uid2', isEqualTo: "")
+        .limit(1)
+        .get();
+    var uid = FirebaseAuth.instance.currentUser?.uid;
+    var newRoomDoc = await _firestore.collection("Chat Rooms").add({
+      'uid1': uid,
+      'uid2': "AI",
+      'messages': [],
+    });
+    final docRef = FirebaseFirestore.instance.collection("User Data").doc(uid);
+    docRef.update({
+      "cids": FieldValue.arrayUnion([newRoomDoc.id])
+    });
+    return newRoomDoc.id;
   }
 
   String _displayName = '';
@@ -78,7 +106,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
     // Retrieve user's display name
     if (user != null) {
       setState(() {
-        _displayName = user.displayName ?? 'No name';
+        _displayName = user.displayName ?? '';
       });
     }
   }
@@ -123,22 +151,38 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                         ),
                         actions: <Widget>[
                           TextButton(
-                            onPressed: (){
+                            onPressed: () async {
                               // DatabaseHandler.createChat(ChatModel()).then((value) {
                               //   // DatabaseHandler._updateCid(ChatModel().cid);
                               // });
-                              var cid = findOrCreateRoom();
-                              Navigator.pop(context);  // remove the pop up screen
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => ChatPage()));
-                              chats.add("AI: ${chats.length}");
+                              var cid = await createRoom();
+                              Navigator.pop(
+                                  context); // remove the pop up screen
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                            cid: cid,
+                                          )));
+                              chats.add(["AI ${chats.length}", cid]);
                             },
                             child: const Text('AiBot'),
                           ),
                           TextButton(
-                            onPressed: () {
-                              chats.add("Person: ${chats.length}");
-                              Navigator.pop(context, 'Find');
+                            onPressed: () async {
+                              // DatabaseHandler.createChat(ChatModel()).then((value) {
+                              //   // DatabaseHandler._updateCid(ChatModel().cid);
+                              // });
+                              var cid = await findOrCreateRoom();
+                              Navigator.pop(
+                                  context); // remove the pop up screen
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                            cid: cid,
+                                          )));
+                              chats.add(["Anonymous ${chats.length}", cid]);
                             },
                             child: const Text('Find'),
                           ),
@@ -161,10 +205,87 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
             padding: const EdgeInsets.all(8),
             itemCount: chats.length,
             itemBuilder: (BuildContext context, int index) {
-              return ListBoxWidget(title: '${index + 1}. ${chats[index]}', date: "03/19/2024", username: _displayName, marginVal: 5.0);
+              // return GestureDetector(
+              //   onTap: () {
+              //     Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => ChatPage(cid: chats[index][1])));
+              //   },
+              //   child: ListBoxWidget(
+              //       title: '${index + 1}. ${chats[index][0]}',
+              //       date: "03/19/2024",
+              //       username: _displayName,
+              //       marginVal: 5.0),
+              // );
+              return Dismissible(
+                key: Key(chats[index][1]),
+                confirmDismiss: (direction) async {
+                  final bool res = await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        content: Text(
+                          "Are you sure you want to delete ${chats[index][0]}?",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop(false); // Return false when canceled
+                            },
+                          ),
+                          TextButton(
+                            child: const Text(
+                              "Delete",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                chats.removeAt(index);
+                              });
+                              Navigator.of(context).pop(true); // Return true when deleted
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                  return res;
+                },
+                background: Container(
+                  color: Colors.red, // Background color when swiping
+                  alignment: Alignment.centerRight,
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 20.0),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatPage(cid: chats[index][1]),
+                      ),
+                    );
+                  },
+                  child: ListBoxWidget(
+                    title: '${index + 1}. ${chats[index][0]}',
+                    date: "03/19/2024",
+                    username: _displayName,
+                    marginVal: 5.0,
+                  ),
+                ),
+              );
             },
             separatorBuilder: (BuildContext context, int index) =>
-            const Divider(),
+                const Divider(),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
