@@ -1,14 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:project/models/chat_model.dart';
 import 'package:project/screens/chatPage.dart';
 import 'package:project/screens/homePage.dart';
 import 'package:project/screens/settingsPage.dart';
-
 import '../color_const.dart';
-import '../databases/database_handler.dart';
 import '../widgets/list_box_widget.dart';
 
 class ChatNavScreen extends StatefulWidget {
@@ -19,8 +15,9 @@ class ChatNavScreen extends StatefulWidget {
 }
 
 class _ChatNavScreenState extends State<ChatNavScreen> {
-  var chats = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<List> chats = [];
+  // var chats = [];
 
   void onTabTapped(int index) {
     if (index == 0) {
@@ -73,11 +70,6 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
   }
 
   Future<String> createRoom() async {
-    final openRoomQuery = await _firestore
-        .collection("Chat Rooms")
-        .where('uid2', isEqualTo: "")
-        .limit(1)
-        .get();
     var uid = FirebaseAuth.instance.currentUser?.uid;
     var newRoomDoc = await _firestore.collection("Chat Rooms").add({
       'uid1': uid,
@@ -156,6 +148,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                               //   // DatabaseHandler._updateCid(ChatModel().cid);
                               // });
                               var cid = await createRoom();
+                              if (!context.mounted) return;
                               Navigator.pop(
                                   context); // remove the pop up screen
                               Navigator.push(
@@ -174,8 +167,9 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                               //   // DatabaseHandler._updateCid(ChatModel().cid);
                               // });
                               var cid = await findOrCreateRoom();
+                              if (!context.mounted) return;
                               Navigator.pop(
-                                  context); // remove the pop up screen
+                                  context);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -201,92 +195,193 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
           ),
         ),
         body: Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.all(8),
-            itemCount: chats.length,
-            itemBuilder: (BuildContext context, int index) {
-              // return GestureDetector(
-              //   onTap: () {
-              //     Navigator.push(context,
-              //         MaterialPageRoute(builder: (context) => ChatPage(cid: chats[index][1])));
-              //   },
-              //   child: ListBoxWidget(
-              //       title: '${index + 1}. ${chats[index][0]}',
-              //       date: "03/19/2024",
-              //       username: _displayName,
-              //       marginVal: 5.0),
-              // );
-              return Dismissible(
-                key: Key(chats[index][1]),
-                confirmDismiss: (direction) async {
-                  final bool res = await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        content: Text(
-                          "Are you sure you want to delete ${chats[index][0]}?",
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text(
-                              "Cancel",
-                              style: TextStyle(color: Colors.white),
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: _firestore.collection("Chat Rooms").snapshots(),
+            builder: (BuildContext context,
+                AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+
+              // Extract chats list from Firestore snapshot
+              chats = snapshot.data!.docs.map((doc) {
+                if (doc['uid2'] != 'AI') {
+                  return ['Person', doc.id];
+                }
+                return ['AI', doc.id];
+              }).toList();
+
+              return ListView.builder(
+                itemCount: chats.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Dismissible(
+                    key: Key(chats[index][1]),
+                    confirmDismiss: (direction) async {
+                      final bool res = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Text(
+                              "Are you sure you want to delete ${chats[index][0]}?",
+                              style: const TextStyle(color: Colors.white),
                             ),
-                            onPressed: () {
-                              Navigator.of(context).pop(false); // Return false when canceled
-                            },
-                          ),
-                          TextButton(
-                            child: const Text(
-                              "Delete",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                chats.removeAt(index);
-                              });
-                              Navigator.of(context).pop(true); // Return true when deleted
-                            },
-                          ),
-                        ],
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(false); // Return false when canceled
+                                },
+                              ),
+                              TextButton(
+                                child: const Text(
+                                  "Delete",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    // Delete the chat document from Firestore
+                                    _firestore
+                                        .collection("Chat Rooms")
+                                        .doc(chats[index][1])
+                                        .delete();
+                                  });
+                                  Navigator.of(context)
+                                      .pop(true); // Return true when deleted
+                                },
+                              ),
+                            ],
+                          );
+                        },
                       );
+                      return res;
                     },
-                  );
-                  return res;
-                },
-                background: Container(
-                  color: Colors.red, // Background color when swiping
-                  alignment: Alignment.centerRight,
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 20.0),
-                    child: Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatPage(cid: chats[index][1]),
+                    background: Container(
+                      color: Colors.red, // Background color when swiping
+                      alignment: Alignment.centerRight,
+                      child: const Padding(
+                        padding: EdgeInsets.only(right: 20.0),
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
                       ),
-                    );
-                  },
-                  child: ListBoxWidget(
-                    title: '${index + 1}. ${chats[index][0]}',
-                    date: "03/19/2024",
-                    username: _displayName,
-                    marginVal: 5.0,
-                  ),
-                ),
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ChatPage(cid: chats[index][1]),
+                          ),
+                        );
+                      },
+                      child: ListBoxWidget(
+                        title: '${index + 1}. ${chats[index][0]}',
+                        date: "03/19/2024",
+                        username: _displayName,
+                        marginVal: 5.0,
+                      ),
+                    ),
+                  );
+                },
               );
             },
-            separatorBuilder: (BuildContext context, int index) =>
-                const Divider(),
           ),
+          // child: ListView.separated(
+          //   padding: const EdgeInsets.all(8),
+          //   itemCount: chats.length,
+          //   itemBuilder: (BuildContext context, int index) {
+          //     // return GestureDetector(
+          //     //   onTap: () {
+          //     //     Navigator.push(context,
+          //     //         MaterialPageRoute(builder: (context) => ChatPage(cid: chats[index][1])));
+          //     //   },
+          //     //   child: ListBoxWidget(
+          //     //       title: '${index + 1}. ${chats[index][0]}',
+          //     //       date: "03/19/2024",
+          //     //       username: _displayName,
+          //     //       marginVal: 5.0),
+          //     // );
+          //     return Dismissible(
+          //       key: Key(chats[index][1]),
+          //       confirmDismiss: (direction) async {
+          //         final bool res = await showDialog(
+          //           context: context,
+          //           builder: (BuildContext context) {
+          //             return AlertDialog(
+          //               content: Text(
+          //                 "Are you sure you want to delete ${chats[index][0]}?",
+          //                 style: const TextStyle(color: Colors.white),
+          //               ),
+          //               actions: <Widget>[
+          //                 TextButton(
+          //                   child: const Text(
+          //                     "Cancel",
+          //                     style: TextStyle(color: Colors.white),
+          //                   ),
+          //                   onPressed: () {
+          //                     Navigator.of(context).pop(false); // Return false when canceled
+          //                   },
+          //                 ),
+          //                 TextButton(
+          //                   child: const Text(
+          //                     "Delete",
+          //                     style: TextStyle(color: Colors.red),
+          //                   ),
+          //                   onPressed: () {
+          //                     setState(() {
+          //                       chats.removeAt(index);
+          //                     });
+          //                     Navigator.of(context).pop(true); // Return true when deleted
+          //                   },
+          //                 ),
+          //               ],
+          //             );
+          //           },
+          //         );
+          //         return res;
+          //       },
+          //       background: Container(
+          //         color: Colors.red, // Background color when swiping
+          //         alignment: Alignment.centerRight,
+          //         child: const Padding(
+          //           padding: EdgeInsets.only(right: 20.0),
+          //           child: Icon(
+          //             Icons.delete,
+          //             color: Colors.white,
+          //           ),
+          //         ),
+          //       ),
+          //       child: GestureDetector(
+          //         onTap: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) => ChatPage(cid: chats[index][1]),
+          //             ),
+          //           );
+          //         },
+          //         child: ListBoxWidget(
+          //           title: '${index + 1}. ${chats[index][0]}',
+          //           date: "03/19/2024",
+          //           username: _displayName,
+          //           marginVal: 5.0,
+          //         ),
+          //       ),
+          //     );
+          //   },
+          //   separatorBuilder: (BuildContext context, int index) =>
+          //   const Divider(),
+          // ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: 1,

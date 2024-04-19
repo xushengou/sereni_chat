@@ -1,45 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../models/message_model.dart';
 import '../models/user_model.dart';
 
-
-class DatabaseHandler{
+class DatabaseHandler {
   //create collection
-  static Future<void> createUser(UserModel user) async{
+  static Future<void> createUser(UserModel user) async {
     String uid = _getUid();
     final userCollection = FirebaseFirestore.instance.collection("User Data");
     final id = userCollection.doc(uid).id;
-    final newUser = UserModel(firstName: "", lastName: "", cids: []).toDocument();
+    final newUser =
+        UserModel(firstName: "", lastName: "", cids: []).toDocument();
 
-    try{
+    try {
       userCollection.doc(id).set(newUser);
-    } catch(e){
+    } catch (e) {
       print(e);
     }
   }
 
-  // create chats
-  // static Future<void> createChat(ChatModel chat) async{
-  //   String uid = _getUid();
-  //   final chatCollection = FirebaseFirestore.instance.collection("Chat data");
-  //   final cid = chatCollection.doc().id;
-  //   final newChat = ChatModel(cid: cid, members: [uid]).toDocument();
-  //
-  //   final userCollection = FirebaseFirestore.instance.collection("User data").doc(uid).collection("cids");
-  //   await userCollection.doc(cid).set({}); // updates user data's cids list value
-  //
-  //   try{
-  //     chatCollection.doc(cid).set(newChat);
-  //   } catch(e){
-  //     print(e);
-  //   }
-  // }
+  static Stream<List<MessageModel>> getMessages(String cid) {
+    final messageCollection = FirebaseFirestore.instance.collection(cid);
+    return messageCollection.snapshots().map((querySnapshot) =>
+        querySnapshot.docs.map((e) => MessageModel.fromSnapshot(e)).toList());
+  }
 
-  
-  static String _getUid(){
+  static String _getUid() {
     final User? user = FirebaseAuth.instance.currentUser;
     final String? uid = user?.uid;
-    if(uid == null){
+    if (uid == null) {
       throw Exception("User not authenticated");
     }
     return uid;

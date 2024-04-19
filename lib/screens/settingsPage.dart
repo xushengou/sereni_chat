@@ -131,36 +131,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         Row(
                           children: [
                             Icon(
-                              Icons.person,
-                              color: whiteGrey,
-                              size: 30.0,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 20.0),
-                              child: Text(
-                                "Account",
-                                style: TextStyle(
-                                  color: whiteGrey,
-                                  fontSize: 20.0,
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: whiteGrey,
-                                size: 30.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Divider(
-                          color: mainGrey,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
                               Icons.privacy_tip_outlined,
                               color: whiteGrey,
                               size: 30.0,
