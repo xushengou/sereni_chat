@@ -2,24 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageModel {
   final String message;
-  final bool isMe;
+  final String user;
   final DateTime timestamp;
 
-  const MessageModel({required this.message, required this.isMe, required this.timestamp});
+  const MessageModel({required this.message, required this.user, required this.timestamp});
   // const MessageModel({required this.isMe, required this.timestamp});
 
 
   factory MessageModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot){
     return MessageModel(
       message: snapshot['message'],
-      isMe: snapshot['isMe'],
+      user: snapshot['user'],
       timestamp: snapshot['timestamp'],
     );
   }
 
   Map<String, dynamic> toDocument() => {
     "message": message,
-    "isMe": isMe,
+    "user": user,
     "timestamp": timestamp,
   };
 }

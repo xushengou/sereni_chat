@@ -61,9 +61,8 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
       var newRoomDoc = await _firestore.collection("Chat Rooms").add({
         'uid1': uid,
         'uid2': "",
-        // 'messages': [],
+        'messages': [],
       });
-      var newMessage = _firestore.collection("Chat Rooms").doc(newRoomDoc.id).collection("messages");
       final docRef =
           FirebaseFirestore.instance.collection("User Data").doc(uid);
       docRef.update({
@@ -78,11 +77,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
     var newRoomDoc = await _firestore.collection("Chat Rooms").add({
       'uid1': uid,
       'uid2': "AI",
-      // 'messages': [],
-    });
-    var newMessage = _firestore.collection("Chat Rooms").doc(newRoomDoc.id).collection("messages").add({
-      'isMe': null,
-      'timestamp': DateTime.now(),
+      'messages': [],
     });
     final docRef = FirebaseFirestore.instance.collection("User Data").doc(uid);
     docRef.update({

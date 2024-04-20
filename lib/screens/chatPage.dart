@@ -68,7 +68,7 @@ class _EditChatPageState extends State<ChatPage> {
                           }
                           return MessageBubble(
                             message: messages[index].message,
-                            isMe: messages[index].isMe,
+                            isMe: messages[index].user == DatabaseHandler.getUid() ? true : false,
                             timestamp: messages[index].timestamp,
                           );
                         },

@@ -6,7 +6,7 @@ import '../models/user_model.dart';
 class DatabaseHandler {
   //create collection
   static Future<void> createUser(UserModel user) async {
-    String uid = _getUid();
+    String uid = getUid();
     final userCollection = FirebaseFirestore.instance.collection("User Data");
     final id = userCollection.doc(uid).id;
     final newUser =
@@ -39,14 +39,14 @@ class DatabaseHandler {
       return messagesData.map((message) {
         return MessageModel(
           message: message['message'] ?? '',
-          isMe: message['isMe'] ?? false,
+          user: message['user'] ?? "",
           timestamp: (message['timestamp'] as Timestamp).toDate() ?? DateTime.now(),
         );
       }).toList();
     });
   }
 
-  static String _getUid() {
+  static String getUid() {
     final User? user = FirebaseAuth.instance.currentUser;
     final String? uid = user?.uid;
     if (uid == null) {
