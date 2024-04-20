@@ -103,7 +103,7 @@ class _EditChatPageState extends State<ChatPage> {
                           onPressed: () {
                             final message = {
                               'message': _bodyController.text,
-                              'isMe': true,
+                              'user': DatabaseHandler.getUid(),
                               'timestamp': DateTime.now(),
                             };
                             _bodyController.clear();
