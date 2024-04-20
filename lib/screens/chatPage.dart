@@ -55,26 +55,30 @@ class _EditChatPageState extends State<ChatPage> {
                       }
                       var messages = snapshot.data;
                       return ListView.builder(
-                          controller: _scrollController,
-                          reverse: true,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 20,
-                          ),
-                          itemCount: messages!.length,
-                          itemBuilder: (context, index) {
-                            return MessageBubble(
-                              message: messages[index].message,
-                              isMe: messages[index].isMe,
-                              timestamp: messages[index].timestamp,
-                            );
-                          });
+                        controller: _scrollController,
+                        reverse: false,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 20,
+                        ),
+                        itemCount: messages != null ? messages.length : 0,
+                        itemBuilder: (context, index) {
+                          if(messages == null || messages.isEmpty){
+                            return Container();
+                          }
+                          return MessageBubble(
+                            message: messages[index].message,
+                            isMe: messages[index].isMe,
+                            timestamp: messages[index].timestamp,
+                          );
+                        },
+                      );
                     },
                   ),
                 ),
                 Padding(
                   padding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
                   child: Container(
                     alignment: Alignment.bottomCenter,
                     child: Row(
@@ -104,11 +108,11 @@ class _EditChatPageState extends State<ChatPage> {
                             };
                             _bodyController.clear();
                             setState(() => _firestore
-                                .collection('Chat Rooms')
-                                .doc(widget.cid)
-                                .update({
-                              "messages": FieldValue.arrayUnion([message])
-                            }));
+                                    .collection('Chat Rooms')
+                                    .doc(widget.cid)
+                                    .update({
+                                  "messages": FieldValue.arrayUnion([message])
+                                }));
                           },
                           child: const Icon(Icons.arrow_upward),
                         ),
@@ -131,9 +135,9 @@ class MessageBubble extends StatelessWidget {
 
   const MessageBubble(
       {super.key,
-        required this.message,
-        required this.isMe,
-        required this.timestamp});
+      required this.message,
+      required this.isMe,
+      required this.timestamp});
 
   @override
   Widget build(BuildContext context) {
