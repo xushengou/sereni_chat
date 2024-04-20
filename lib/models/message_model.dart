@@ -6,6 +6,8 @@ class MessageModel {
   final DateTime timestamp;
 
   const MessageModel({required this.message, required this.isMe, required this.timestamp});
+  // const MessageModel({required this.isMe, required this.timestamp});
+
 
   factory MessageModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot){
     return MessageModel(

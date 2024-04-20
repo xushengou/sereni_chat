@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:project/color_const.dart';
 import 'package:project/databases/database_handler.dart';
 import '../models/message_model.dart';
@@ -8,7 +10,6 @@ import '../widgets/chattxt_widget.dart';
 import 'package:intl/intl.dart';
 
 class ChatPage extends StatefulWidget {
-
   final String cid;
 
   const ChatPage({super.key, required this.cid});
@@ -28,76 +29,52 @@ class _EditChatPageState extends State<ChatPage> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.white),
-          backgroundColor: primary_color,
-          // backgroundColor: Colors.white,
-          title: const Text(
-            "Anonymous/AI",
-            style: TextStyle(
-              color: secondary_color,
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            iconTheme: const IconThemeData(color: Colors.white),
+            backgroundColor: primary_color,
+            // backgroundColor: Colors.white,
+            title: const Text(
+              "Anonymous/AI",
+              style: TextStyle(
+                color: secondary_color,
+              ),
             ),
           ),
-        ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: StreamBuilder<List<MessageModel>>( // inside the <> you enter the type of your stream
-                  stream: DatabaseHandler.getMessages(widget.cid),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData || snapshot.data!.isEmpty || (snapshot.connectionState == ConnectionState.waiting)) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    var messages = snapshot.data;
-                    return ListView.builder(
-                      controller: _scrollController,
-                      reverse: true,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 20,
-                      ),
-                      itemCount: messages!.length,
-                      itemBuilder: (context, index){
-                        return MessageBubble(
-                          message: messages[index].message,
-                          isMe: messages[index].isMe,
-                          timestamp: messages[index].timestamp,
-                        );
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: StreamBuilder<List<MessageModel>>(
+                    // inside the <> you enter the type of your stream
+                    stream: DatabaseHandler.getMessages(widget.cid),
+                    builder: (context, snapshot) {
+                      print(snapshot);
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
                       }
-                    );
-                    // List<MessageBubble> messageWidgets = [];
-                    // for (var message in messages) {
-                    //   var messageText = message['message'];
-                    //   var isMe = message['isMe'];
-                    //   var timeStamp = message['timestamp'];
-                    //   var messageWidget = MessageBubble(
-                    //     messageText,
-                    //     isMe,
-                    //     timeStamp,
-                    //   );
-                    //   messageWidgets.add(messageWidget);
-                    // }
-
-                    // return ListView(
-                    //   controller: _scrollController,
-                    //   reverse: true,
-                    //   padding: const EdgeInsets.symmetric(
-                    //     horizontal: 10,
-                    //     vertical: 20,
-                    //   ),
-                    //   children: messageWidgets,
-                    // );
-                  },
+                      var messages = snapshot.data;
+                      return ListView.builder(
+                          controller: _scrollController,
+                          reverse: true,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 20,
+                          ),
+                          itemCount: messages!.length,
+                          itemBuilder: (context, index) {
+                            return MessageBubble(
+                              message: messages[index].message,
+                              isMe: messages[index].isMe,
+                              timestamp: messages[index].timestamp,
+                            );
+                          });
+                    },
+                  ),
                 ),
-              ),
-
-
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                child: Expanded(
+                Padding(
+                  padding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
                   child: Container(
                     alignment: Alignment.bottomCenter,
                     child: Row(
@@ -126,8 +103,12 @@ class _EditChatPageState extends State<ChatPage> {
                               'timestamp': DateTime.now(),
                             };
                             _bodyController.clear();
-                            setState(() => _firestore.collection('Chat Rooms').doc(widget.cid).update({"messages": FieldValue.arrayUnion([message])}));
-
+                            setState(() => _firestore
+                                .collection('Chat Rooms')
+                                .doc(widget.cid)
+                                .update({
+                              "messages": FieldValue.arrayUnion([message])
+                            }));
                           },
                           child: const Icon(Icons.arrow_upward),
                         ),
@@ -135,25 +116,24 @@ class _EditChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(10),
-              )
-            ],
-          ),
-        )
-      ),
+              ],
+            ),
+          )),
     );
   }
 }
 
 // finish this
-class MessageBubble extends StatelessWidget{
+class MessageBubble extends StatelessWidget {
   final String message;
   final bool isMe;
   final DateTime timestamp;
 
-  const MessageBubble({super.key, required this.message, required this.isMe, required this.timestamp});
+  const MessageBubble(
+      {super.key,
+        required this.message,
+        required this.isMe,
+        required this.timestamp});
 
   @override
   Widget build(BuildContext context) {
@@ -176,11 +156,8 @@ class MessageBubble extends StatelessWidget{
             ),
           ),
         ),
-
         Align(
-          alignment: isMe
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
+          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
           child: Card(
             elevation: 8,
             child: Padding(
@@ -191,4 +168,5 @@ class MessageBubble extends StatelessWidget{
         ),
       ],
     );
-  }}
+  }
+}

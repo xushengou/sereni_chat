@@ -20,9 +20,30 @@ class DatabaseHandler {
   }
 
   static Stream<List<MessageModel>> getMessages(String cid) {
-    final messageCollection = FirebaseFirestore.instance.collection(cid);
-    return messageCollection.snapshots().map((querySnapshot) =>
-        querySnapshot.docs.map((e) => MessageModel.fromSnapshot(e)).toList());
+    final messageDocument = FirebaseFirestore.instance
+        .collection('Chat Rooms')
+        .doc(cid);
+
+    return messageDocument.snapshots().map((documentSnapshot) {
+      if (!documentSnapshot.exists || documentSnapshot.data() == null) {
+        return []; // Return an empty list if document doesn't exist or data is null
+      }
+
+      // Extract the messages list from the document data
+      List<dynamic> messagesData = documentSnapshot.data()!['messages'];
+      if (messagesData == null || messagesData.isEmpty) {
+        return []; // Return an empty list if messages data is null or empty
+      }
+
+      // Convert messages data to MessageModel objects
+      return messagesData.map((message) {
+        return MessageModel(
+          message: message['message'] ?? '',
+          isMe: message['isMe'] ?? false,
+          timestamp: (message['timestamp'] as Timestamp).toDate() ?? DateTime.now(),
+        );
+      }).toList();
+    });
   }
 
   static String _getUid() {

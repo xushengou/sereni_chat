@@ -58,8 +58,9 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
       var newRoomDoc = await _firestore.collection("Chat Rooms").add({
         'uid1': uid,
         'uid2': "",
-        'messages': [],
+        // 'messages': [],
       });
+      var newMessage = _firestore.collection("Chat Rooms").doc(newRoomDoc.id).collection("messages");
       final docRef =
           FirebaseFirestore.instance.collection("User Data").doc(uid);
       docRef.update({
@@ -74,7 +75,11 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
     var newRoomDoc = await _firestore.collection("Chat Rooms").add({
       'uid1': uid,
       'uid2': "AI",
-      'messages': [],
+      // 'messages': [],
+    });
+    var newMessage = _firestore.collection("Chat Rooms").doc(newRoomDoc.id).collection("messages").add({
+      'isMe': null,
+      'timestamp': DateTime.now(),
     });
     final docRef = FirebaseFirestore.instance.collection("User Data").doc(uid);
     docRef.update({
@@ -285,7 +290,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                         );
                       },
                       child: ListBoxWidget(
-                        title: '${index + 1}. ${chats[index][0]}',
+                        title: '${index + 1}. ${chats[index][1]}',
                         date: "03/19/2024",
                         username: _displayName,
                         marginVal: 5.0,
