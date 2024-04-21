@@ -25,11 +25,9 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const HomePage()));
     } else if (index == 1) {
-      Navigator.pop(context);
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const ChatNavScreen()));
     } else {
-      Navigator.pop(context);
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const SettingsPage()));
     }
@@ -299,92 +297,6 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
               );
             },
           ),
-          // child: ListView.separated(
-          //   padding: const EdgeInsets.all(8),
-          //   itemCount: chats.length,
-          //   itemBuilder: (BuildContext context, int index) {
-          //     // return GestureDetector(
-          //     //   onTap: () {
-          //     //     Navigator.push(context,
-          //     //         MaterialPageRoute(builder: (context) => ChatPage(cid: chats[index][1])));
-          //     //   },
-          //     //   child: ListBoxWidget(
-          //     //       title: '${index + 1}. ${chats[index][0]}',
-          //     //       date: "03/19/2024",
-          //     //       username: _displayName,
-          //     //       marginVal: 5.0),
-          //     // );
-          //     return Dismissible(
-          //       key: Key(chats[index][1]),
-          //       confirmDismiss: (direction) async {
-          //         final bool res = await showDialog(
-          //           context: context,
-          //           builder: (BuildContext context) {
-          //             return AlertDialog(
-          //               content: Text(
-          //                 "Are you sure you want to delete ${chats[index][0]}?",
-          //                 style: const TextStyle(color: Colors.white),
-          //               ),
-          //               actions: <Widget>[
-          //                 TextButton(
-          //                   child: const Text(
-          //                     "Cancel",
-          //                     style: TextStyle(color: Colors.white),
-          //                   ),
-          //                   onPressed: () {
-          //                     Navigator.of(context).pop(false); // Return false when canceled
-          //                   },
-          //                 ),
-          //                 TextButton(
-          //                   child: const Text(
-          //                     "Delete",
-          //                     style: TextStyle(color: Colors.red),
-          //                   ),
-          //                   onPressed: () {
-          //                     setState(() {
-          //                       chats.removeAt(index);
-          //                     });
-          //                     Navigator.of(context).pop(true); // Return true when deleted
-          //                   },
-          //                 ),
-          //               ],
-          //             );
-          //           },
-          //         );
-          //         return res;
-          //       },
-          //       background: Container(
-          //         color: Colors.red, // Background color when swiping
-          //         alignment: Alignment.centerRight,
-          //         child: const Padding(
-          //           padding: EdgeInsets.only(right: 20.0),
-          //           child: Icon(
-          //             Icons.delete,
-          //             color: Colors.white,
-          //           ),
-          //         ),
-          //       ),
-          //       child: GestureDetector(
-          //         onTap: () {
-          //           Navigator.push(
-          //             context,
-          //             MaterialPageRoute(
-          //               builder: (context) => ChatPage(cid: chats[index][1]),
-          //             ),
-          //           );
-          //         },
-          //         child: ListBoxWidget(
-          //           title: '${index + 1}. ${chats[index][0]}',
-          //           date: "03/19/2024",
-          //           username: _displayName,
-          //           marginVal: 5.0,
-          //         ),
-          //       ),
-          //     );
-          //   },
-          //   separatorBuilder: (BuildContext context, int index) =>
-          //   const Divider(),
-          // ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: 1,

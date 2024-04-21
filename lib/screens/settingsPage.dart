@@ -18,11 +18,9 @@ class _SettingsPageState extends State<SettingsPage> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const HomePage()));
     } else if (index == 1) {
-      Navigator.pop(context);
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const ChatNavScreen()));
     } else {
-      Navigator.pop(context);
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const SettingsPage()));
     }

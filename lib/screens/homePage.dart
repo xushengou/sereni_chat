@@ -44,15 +44,12 @@ class _HomePageState extends State<HomePage> {
 
   void onTabTapped(int index) {
     if(index == 0){
-      Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
     }
     else if(index == 1){
-      Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatNavScreen()));
     }
     else{
-      Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage()));
     }
   }
