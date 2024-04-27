@@ -149,6 +149,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                               //   // DatabaseHandler._updateCid(ChatModel().cid);
                               // });
                               var cid = await createRoom();
+
                               if (!context.mounted) return;
                               Navigator.pop(
                                   context); // remove the pop up screen
@@ -156,7 +157,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatPage(
-                                            cid: cid,
+                                            cid: cid, title: 'AI',
                                           )));
                               chats.add(["AI ${chats.length}", cid]);
                             },
@@ -175,7 +176,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatPage(
-                                            cid: cid,
+                                            cid: cid, title: 'Person',
                                           )));
                               chats.add(["Anonymous ${chats.length}", cid]);
                             },
@@ -281,12 +282,12 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                ChatPage(cid: chats[index][1]),
+                                ChatPage(cid: chats[index][1], title: chats[index][0],),
                           ),
                         );
                       },
                       child: ListBoxWidget(
-                        title: '${index + 1}. ${chats[index][1]}',
+                        title: '${index + 1}. ${chats[index][0]}',
                         date: "03/19/2024",
                         username: _displayName,
                         marginVal: 5.0,

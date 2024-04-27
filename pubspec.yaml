@@ -41,7 +41,7 @@ dependencies:
   firebase_auth: ^4.17.9
   cloud_firestore: ^4.15.9
   firebase_database: ^10.4.10
-  chat_gpt_sdk: ^3.0.4
+  chat_gpt_sdk: ^2.0.6
   flutter_dotenv: ^5.1.0
 
 dev_dependencies:
@@ -66,8 +66,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-#  assets:
-#    - assets/.env
+  assets:
+    - assets/.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

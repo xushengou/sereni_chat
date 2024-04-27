@@ -1,8 +1,7 @@
+import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project/color_const.dart';
 import 'package:project/databases/database_handler.dart';
 import '../models/message_model.dart';
@@ -11,18 +10,58 @@ import 'package:intl/intl.dart';
 
 class ChatPage extends StatefulWidget {
   final String cid;
+  final String title;
 
-  const ChatPage({super.key, required this.cid});
+  const ChatPage({super.key, required this.cid, required this.title});
 
   @override
   State<ChatPage> createState() => _EditChatPageState();
 }
 
 class _EditChatPageState extends State<ChatPage> {
-  TextEditingController _bodyController = TextEditingController();
-  ScrollController _scrollController = ScrollController();
+  late final OpenAI _openAI;
+  bool _isLoading = true;
+  String? answer;
+
+  final TextEditingController _bodyController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    // Initialize ChatGPT SDK
+    _openAI = OpenAI.instance.build(
+      token: dotenv.env['OPENAI_API_KEY'],
+      baseOption: HttpSetup(
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
+    _handleInitialMessage();
+    super.initState();
+  }
+
+  Future<void> _handleInitialMessage() async {
+    String userPrompt = _bodyController.text;
+
+    final request = ChatCompleteText(
+      messages: [
+        Messages(
+          role: Role.user,
+          content: userPrompt,
+        ),
+      ],
+      maxToken: 10,
+      model: GptTurbo0631Model(),
+    );
+
+    ChatCTResponse? response = await _openAI.onChatCompletion(request: request);
+
+    setState(() {
+      answer = response!.choices.first.message!.content.trim();
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +73,9 @@ class _EditChatPageState extends State<ChatPage> {
             iconTheme: const IconThemeData(color: Colors.white),
             backgroundColor: primary_color,
             // backgroundColor: Colors.white,
-            title: const Text(
-              "Anonymous/AI",
-              style: TextStyle(
+            title: Text(
+              widget.title,
+              style: const TextStyle(
                 color: secondary_color,
               ),
             ),
@@ -49,7 +88,6 @@ class _EditChatPageState extends State<ChatPage> {
                     // inside the <> you enter the type of your stream
                     stream: DatabaseHandler.getMessages(widget.cid),
                     builder: (context, snapshot) {
-                      print(snapshot);
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
@@ -63,12 +101,15 @@ class _EditChatPageState extends State<ChatPage> {
                         ),
                         itemCount: messages != null ? messages.length : 0,
                         itemBuilder: (context, index) {
-                          if(messages == null || messages.isEmpty){
+                          if (messages == null || messages.isEmpty) {
                             return Container();
                           }
                           return MessageBubble(
                             message: messages[index].message,
-                            isMe: messages[index].user == DatabaseHandler.getUid() ? true : false,
+                            isMe:
+                                messages[index].user == DatabaseHandler.getUid()
+                                    ? true
+                                    : false,
                             timestamp: messages[index].timestamp,
                           );
                         },
@@ -77,8 +118,8 @@ class _EditChatPageState extends State<ChatPage> {
                   ),
                 ),
                 Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 15.0),
                   child: Container(
                     alignment: Alignment.bottomCenter,
                     child: Row(
@@ -101,19 +142,42 @@ class _EditChatPageState extends State<ChatPage> {
                             ),
                           ),
                           onPressed: () {
-                            final message = {
-                              'message': _bodyController.text,
-                              'user': DatabaseHandler.getUid(),
-                              'timestamp': DateTime.now(),
-                            };
-                            _bodyController.clear();
-                            setState(() => _firestore
-                                    .collection('Chat Rooms')
-                                    .doc(widget.cid)
-                                    .update({
-                                  "messages": FieldValue.arrayUnion([message])
-                                }));
-                          },
+                            if (widget.title == 'Person') {
+                              final message = {
+                                'message': _bodyController.text,
+                                'user': DatabaseHandler.getUid(),
+                                'timestamp': DateTime.now(),
+                              };
+                              _bodyController.clear();
+                              setState(() =>
+                                  _firestore
+                                      .collection('Chat Rooms')
+                                      .doc(widget.cid)
+                                      .update({
+                                    "messages": FieldValue.arrayUnion([message])
+                                  }));
+                            } else if (widget.title == 'AI'){
+                              final message = {
+                                'message': _bodyController.text,
+                                'user': DatabaseHandler.getUid(),
+                                'timestamp': DateTime.now(),
+                              };
+                              _handleInitialMessage();
+                              _bodyController.clear();
+
+                              final messageAI = {
+                                'message' : answer,
+                                'user' : 'AI',
+                                'timestamp': DateTime.now(),
+                              };
+                              setState(() =>
+                                  _firestore
+                                      .collection('Chat Rooms')
+                                      .doc(widget.cid)
+                                      .update({
+                                    "messages": FieldValue.arrayUnion([message, messageAI])
+                                  }));
+                            }},
                           child: const Icon(Icons.arrow_upward),
                         ),
                       ],
