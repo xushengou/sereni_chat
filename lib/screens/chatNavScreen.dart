@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project/databases/database_handler.dart';
 import 'package:project/screens/chatPage.dart';
 import 'package:project/screens/homePage.dart';
 import 'package:project/screens/settingsPage.dart';
@@ -44,32 +45,53 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
     if (openRoomQuery.docs.isNotEmpty) {
       // An open room exists
       var roomId = openRoomQuery.docs.first.id;
-      // Join the open room by setting uid2 to the current user's UID.
-      await _firestore.collection("Chat Rooms").doc(roomId).update({
-        'uid2': uid,
-      });
-      final docRef =
-          FirebaseFirestore.instance.collection("User Data").doc(uid);
-      docRef.update({
-        "cids": [roomId]
-      });
-      return roomId;
-    } else {
-      // No open rooms, create a new one.
-      var newRoomDoc = await _firestore.collection("Chat Rooms").add({
-        'uid1': uid,
-        'uid2': "",
-        'messages': [],
-      });
-      final docRef =
-          FirebaseFirestore.instance.collection("User Data").doc(uid);
-      docRef.update({
-        "cids": FieldValue.arrayUnion([newRoomDoc.id])
-      });
-      return newRoomDoc.id;
+
+      // Check if the user is not already in the room
+      var roomData = openRoomQuery.docs.first.data();
+      if (roomData['uid1'] != uid) {
+        // Join the open room by setting uid2 to the current user's UID.
+        await _firestore.collection("Chat Rooms").doc(roomId).update({
+          'uid2': uid,
+        });
+        final docRef =
+        FirebaseFirestore.instance.collection("User Data").doc(uid);
+
+        // Retrieve the current list of chat IDs for the user
+        var userData = await docRef.get();
+        var cids = List<String>.from(userData.data()?['cids'] ?? []);
+
+        // Append the new roomId to the existing array
+        cids.add(roomId);
+
+        // Update the document with the combined list
+        docRef.update({"cids": cids});
+
+        return roomId;
+      }
     }
+    // No open rooms or user is already in the open room, create a new one.
+    var newRoomDoc = await _firestore.collection("Chat Rooms").add({
+      'uid1': uid,
+      'uid2': "",
+      'messages': [],
+    });
+    final docRef =
+    FirebaseFirestore.instance.collection("User Data").doc(uid);
+
+    // Retrieve the current list of chat IDs for the user
+    var userData = await docRef.get();
+    var cids = List<String>.from(userData.data()?['cids'] ?? []);
+
+    // Append the new roomId to the existing array
+    cids.add(newRoomDoc.id);
+
+    // Update the document with the combined list
+    docRef.update({"cids": cids});
+    return newRoomDoc.id;
   }
 
+
+// this is for the aibot chatroom
   Future<String> createRoom() async {
     var uid = FirebaseAuth.instance.currentUser?.uid;
     var newRoomDoc = await _firestore.collection("Chat Rooms").add({
@@ -157,8 +179,8 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatPage(
-                                            cid: cid, title: 'AI',
-                                          )));
+                                        cid: cid, title: 'AI',
+                                      )));
                               chats.add(["AI ${chats.length}", cid]);
                             },
                             child: const Text('AiBot'),
@@ -176,8 +198,8 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatPage(
-                                            cid: cid, title: 'Person',
-                                          )));
+                                        cid: cid, title: 'Person',
+                                      )));
                               chats.add(["Anonymous ${chats.length}", cid]);
                             },
                             child: const Text('Find'),
@@ -209,26 +231,41 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                 return Center(child: Text('Error: ${snapshot.error}'));
               }
 
+              var myChat = DatabaseHandler.getUid();
               // Extract chats list from Firestore snapshot
-              chats = snapshot.data!.docs.map((doc) {
-                if (doc['uid2'] != 'AI') {
-                  return ['Person', doc.id];
+              List<List<String>?>? chats = snapshot.data!.docs.map<List<String>?>((doc) {
+                var uid1 = doc['uid1'];
+                var uid2 = doc['uid2'];
+                // to see if you are getting the current user
+                // print(myChat)
+                // print uids to check if you are getting the right values
+                // print(uid1);
+                // print(uid2);
+                // check if they are not null
+                if (uid1 != null && uid2 != null) {
+                  if (uid2 != 'AI' && (uid1 == myChat || uid2 == myChat)) {
+                    return ['Person', doc.id];
+                  } else if (uid2 == 'AI' && uid1 == myChat) {
+                    return ['AI', doc.id];
+                  }
                 }
-                return ['AI', doc.id];
-              }).toList();
-
+                return null;
+                // get rid of null values so they don't go into chats,
+                // if they go into chats you get red screen.
+              }).where((chat) => chat != null).toList().cast<List<String>?>();
+              // a lot of ! and ? when using chats indexes
               return ListView.builder(
                 itemCount: chats.length,
-                itemBuilder: (BuildContext context, int index) {
+                itemBuilder: (context, index) {
                   return Dismissible(
-                    key: Key(chats[index][1]),
+                    key: Key(chats[index]![1]),
                     confirmDismiss: (direction) async {
                       final bool res = await showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
                             content: Text(
-                              "Are you sure you want to delete ${chats[index][0]}?",
+                              "Are you sure you want to delete ${chats[index]?[0]}?",
                               style: const TextStyle(color: Colors.white),
                             ),
                             actions: <Widget>[
@@ -238,8 +275,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 onPressed: () {
-                                  Navigator.of(context)
-                                      .pop(false); // Return false when canceled
+                                  Navigator.of(context).pop(false); // Return false when canceled
                                 },
                               ),
                               TextButton(
@@ -252,11 +288,10 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                     // Delete the chat document from Firestore
                                     _firestore
                                         .collection("Chat Rooms")
-                                        .doc(chats[index][1])
+                                        .doc(chats[index]?[1])
                                         .delete();
                                   });
-                                  Navigator.of(context)
-                                      .pop(true); // Return true when deleted
+                                  Navigator.of(context).pop(true); // Return true when deleted
                                 },
                               ),
                             ],
@@ -282,12 +317,12 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                ChatPage(cid: chats[index][1], title: chats[index][0],),
+                                ChatPage(cid: chats[index]![1], title: chats[index]![0],),
                           ),
                         );
                       },
                       child: ListBoxWidget(
-                        title: '${index + 1}. ${chats[index][0]}',
+                        title: '${index + 1}. ${chats[index]?[1]}',
                         date: "03/19/2024",
                         username: _displayName,
                         marginVal: 5.0,
