@@ -51,7 +51,7 @@ class _EditChatPageState extends State<ChatPage> {
           content: userPrompt,
         ),
       ],
-      maxToken: 10,
+      maxToken: 500,
       model: GptTurbo0631Model(),
     );
 
@@ -141,7 +141,7 @@ class _EditChatPageState extends State<ChatPage> {
                               fontSize: 20,
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (widget.title == 'Person') {
                               final message = {
                                 'message': _bodyController.text,
@@ -149,35 +149,35 @@ class _EditChatPageState extends State<ChatPage> {
                                 'timestamp': DateTime.now(),
                               };
                               _bodyController.clear();
-                              setState(() =>
-                                  _firestore
+                              setState(() => _firestore
                                       .collection('Chat Rooms')
                                       .doc(widget.cid)
                                       .update({
                                     "messages": FieldValue.arrayUnion([message])
                                   }));
-                            } else if (widget.title == 'AI'){
+                            } else if (widget.title == 'AI') {
                               final message = {
                                 'message': _bodyController.text,
                                 'user': DatabaseHandler.getUid(),
                                 'timestamp': DateTime.now(),
                               };
-                              _handleInitialMessage();
+                              await _handleInitialMessage();
                               _bodyController.clear();
 
                               final messageAI = {
-                                'message' : answer,
-                                'user' : 'AI',
+                                'message': answer,
+                                'user': 'AI',
                                 'timestamp': DateTime.now(),
                               };
-                              setState(() =>
-                                  _firestore
+                              setState(() => _firestore
                                       .collection('Chat Rooms')
                                       .doc(widget.cid)
                                       .update({
-                                    "messages": FieldValue.arrayUnion([message, messageAI])
+                                    "messages": FieldValue.arrayUnion(
+                                        [message, messageAI])
                                   }));
-                            }},
+                            }
+                          },
                           child: const Icon(Icons.arrow_upward),
                         ),
                       ],
@@ -191,7 +191,6 @@ class _EditChatPageState extends State<ChatPage> {
   }
 }
 
-// finish this
 class MessageBubble extends StatelessWidget {
   final String message;
   final bool isMe;
@@ -207,30 +206,51 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 100.0,
-          child: Center(
-            child: Card(
-              color: shaded_blue,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Text(
-                  DateFormat.yMMMd().format(timestamp),
-                  style: const TextStyle(
-                    color: secondary_color,
-                  ),
+
+        Align(
+          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+          child: Card(
+            elevation: 8,
+            color: isMe ? shaded_blue : secondary_color,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: isMe ? Colors.white : Colors.black,
                 ),
               ),
             ),
           ),
         ),
-        Align(
-          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      ],
+    );
+  }
+}
+
+class DateBubble extends StatelessWidget {
+  final DateTime timestamp;
+
+  const DateBubble(
+      {super.key,
+        required this.timestamp});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 15,),
+        Center(
           child: Card(
-            elevation: 8,
+            color: Colors.grey,
             child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(message),
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                DateFormat('dd/MM/yyyy - HH:mm').format(timestamp),
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+              ),
             ),
           ),
         ),
