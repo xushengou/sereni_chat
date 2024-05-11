@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
-import 'package:project/screens/signUpPage.dart';
+import 'package:project/screens/sign_up.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,7 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   String email = "";
   String password = "";
   final _auth = FirebaseAuth.instance;
@@ -45,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           style: TextStyle(
             fontSize: 40,
             fontWeight: FontWeight.bold,
-            color: secondary_color,
+            color: white,
           ),
         )
       ],
@@ -56,7 +55,6 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-
         TextField(
           onChanged: (value) {
             email = value;
@@ -70,18 +68,14 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: Colors.blue.shade100, //
+            fillColor: lightShadedBlue,
             filled: true,
-            prefixIcon: Icon(Icons.email),
+            prefixIcon: const Icon(Icons.email),
           ),
           enableSuggestions: false,
           autocorrect: false,
         ),
-
-
         const SizedBox(height: 10),
-
-
         TextField(
           onChanged: (value) {
             password = value;
@@ -95,36 +89,38 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: Colors.blue.shade100, //
+            fillColor: lightShadedBlue,
             filled: true,
-            prefixIcon: Icon(Icons.lock),
+            prefixIcon: const Icon(Icons.lock),
           ),
           obscureText: true,
           enableSuggestions: false,
           autocorrect: false,
         ),
-
         const SizedBox(height: 10),
-
         ElevatedButton(
-          onPressed: () async{
-            try{
-              final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
-              if(user != null){
-                Navigator.pushNamed(context, "homePage");
+          onPressed: () async {
+            try {
+              final user = await _auth.signInWithEmailAndPassword(
+                  email: email, password: password);
+              if (user != null) {
+                Navigator.pushNamed(context, "navPage");
               }
-            }catch(e){
+            } catch (e) {
               print(e);
             }
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: shaded_blue,
+            backgroundColor: darkShadedBlue,
           ),
           child: const Text(
             "Login",
-            style: TextStyle(fontSize: 20, color: secondary_color,),
+            style: TextStyle(
+              fontSize: 20,
+              color: white,
+            ),
           ),
         )
       ],
@@ -153,7 +149,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         TextButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const SignUpPage()));
           },
           child: const Text(
             'Sign Up',

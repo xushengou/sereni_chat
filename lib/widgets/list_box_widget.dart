@@ -25,18 +25,18 @@ class ListBoxWidget extends StatelessWidget {
       margin: EdgeInsets.all(marginVal as double),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: mainGrey,
+        color: darkShadedWhite,
       ),
-      padding: EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
           Row(
             children: [
               //Title
               Text(
-                "${title}".length > 15 ? "${title}".substring(0, 15)+'...' : "${title}",
+                "${title}".length > 12 ? "${title}".substring(0, 12)+'...' : "${title}",
                 style: const TextStyle(
-                  color: secondary_color,
+                  color: white,
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
                 ),
@@ -48,27 +48,12 @@ class ListBoxWidget extends StatelessWidget {
 
               Text(
                 "${date}",
-                style: const TextStyle(
-                  color: subTextColor,
+                style: TextStyle(
+                  color: darkShadedGrey,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               )
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              Text(
-                "By: ${username}",
-                style: const TextStyle(
-                  color: secondary_color,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ],
           ),
         ],

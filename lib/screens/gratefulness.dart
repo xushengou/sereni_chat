@@ -26,11 +26,11 @@ class _GratefulnessPageState extends State<GratefulnessPage> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.white),
-          backgroundColor: primary_color,
+          iconTheme: const IconThemeData(color: white),
+          backgroundColor: darkTheme1,
           title: const Text(
             "My Gratefulness",
-            style: TextStyle(color: secondary_color),
+            style: TextStyle(color: white),
           ),
         ),
         body: Expanded(
@@ -39,17 +39,11 @@ class _GratefulnessPageState extends State<GratefulnessPage> {
               padding: const EdgeInsets.all(8),
               itemCount: gratefulnessList.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListBoxWidget(title: '${index + 1}. ${gratefulnessList[index]}', date: "03/19/2024", username: "username", marginVal: 5.0);
-                // SizedBox(
-                //   height: 50,
-                //   child: Text(
-                //     '${index + 1}) ${gratefulnessList[index]}',
-                //     style: const TextStyle(
-                //       color: secondary_color,
-                //       fontSize: 20.0,
-                //     ),
-                //   ),
-                // );
+                return ListBoxWidget(
+                    title: '${index + 1}. ${gratefulnessList[index]}',
+                    date: "03/19/2024",
+                    username: "username",
+                    marginVal: 5.0);
               },
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(),
@@ -63,16 +57,15 @@ class _GratefulnessPageState extends State<GratefulnessPage> {
               title: const Text(
                 'Add a new gratefulness',
                 style: TextStyle(
-                  color: secondary_color,
+                  color: white,
                 ),
               ),
               content: TextField(
                 onSubmitted: (value) {
-                  if(value != ""){
+                  if (value != "") {
                     gratefulnessList.add(value);
                     Navigator.pop(context);
-                  }
-                  else{
+                  } else {
                     Navigator.pop(context);
                   }
                 },
@@ -81,29 +74,16 @@ class _GratefulnessPageState extends State<GratefulnessPage> {
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: Colors.blue.shade100, //
+                  fillColor: lightShadedBlue,
                   filled: true,
                 ),
               ),
-              // actions: <Widget>[
-              //   TextButton(
-              //     onPressed: () => Navigator.pop(context, 'Cancel'),
-              //     child: const Text('Cancel'),
-              //   ),
-              //   TextButton(
-              //     onPressed: () {
-              //       gratefulnessList.add(newGratefulnessItem);
-              //       Navigator.pop(context, 'Add');
-              //     },
-              //     child: const Text('Add'),
-              //   ),
-              // ],
             ),
           ),
-          backgroundColor: secondary_color,
+          backgroundColor: white,
           child: const Icon(
             Icons.add,
-            color: primary_color,
+            color: darkTheme1,
           ),
         ),
       ),

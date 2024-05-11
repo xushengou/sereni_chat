@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project/databases/database_handler.dart';
-import 'package:project/screens/chatPage.dart';
-import 'package:project/screens/homePage.dart';
-import 'package:project/screens/settingsPage.dart';
+import 'package:project/screens/chat_room.dart';
+import 'package:project/screens/home.dart';
+import 'package:project/screens/settings.dart';
 import '../color_const.dart';
 import '../widgets/list_box_widget.dart';
 
@@ -18,21 +18,6 @@ class ChatNavScreen extends StatefulWidget {
 class _ChatNavScreenState extends State<ChatNavScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<List> chats = [];
-  // var chats = [];
-
-  void onTabTapped(int index) {
-    if (index == 0) {
-      Navigator.pop(context);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const HomePage()));
-    } else if (index == 1) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const ChatNavScreen()));
-    } else {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const SettingsPage()));
-    }
-  }
 
   Future<String> findOrCreateRoom() async {
     final openRoomQuery = await _firestore
@@ -54,7 +39,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
           'uid2': uid,
         });
         final docRef =
-        FirebaseFirestore.instance.collection("User Data").doc(uid);
+            FirebaseFirestore.instance.collection("User Data").doc(uid);
 
         // Retrieve the current list of chat IDs for the user
         var userData = await docRef.get();
@@ -75,8 +60,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
       'uid2': "",
       'messages': [],
     });
-    final docRef =
-    FirebaseFirestore.instance.collection("User Data").doc(uid);
+    final docRef = FirebaseFirestore.instance.collection("User Data").doc(uid);
 
     // Retrieve the current list of chat IDs for the user
     var userData = await docRef.get();
@@ -89,7 +73,6 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
     docRef.update({"cids": cids});
     return newRoomDoc.id;
   }
-
 
 // this is for the aibot chatroom
   Future<String> createRoom() async {
@@ -137,7 +120,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: primary_color,
+          backgroundColor: darkTheme1,
           title: Padding(
             padding: const EdgeInsets.only(left: 5.0),
             child: Row(
@@ -146,7 +129,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                 const Text(
                   "Chats",
                   style: TextStyle(
-                    color: secondary_color,
+                    color: white,
                     fontSize: 30.0,
                   ),
                 ),
@@ -161,7 +144,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                         title: const Text(
                           'Create new Chat',
                           style: TextStyle(
-                            color: secondary_color,
+                            color: white,
                           ),
                         ),
                         actions: <Widget>[
@@ -179,8 +162,9 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatPage(
-                                        cid: cid, title: 'AI',
-                                      )));
+                                            cid: cid,
+                                            title: 'AI',
+                                          )));
                               chats.add(["AI ${chats.length}", cid]);
                             },
                             child: const Text('AiBot'),
@@ -192,14 +176,14 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                               // });
                               var cid = await findOrCreateRoom();
                               if (!context.mounted) return;
-                              Navigator.pop(
-                                  context);
+                              Navigator.pop(context);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ChatPage(
-                                        cid: cid, title: 'Person',
-                                      )));
+                                            cid: cid,
+                                            title: 'Person',
+                                          )));
                               chats.add(["Anonymous ${chats.length}", cid]);
                             },
                             child: const Text('Find'),
@@ -209,7 +193,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                     ),
                     icon: const Icon(
                       Icons.add,
-                      color: Colors.white,
+                      color: white,
                     ),
                     iconSize: 40.0,
                   ),
@@ -233,26 +217,30 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
 
               var myChat = DatabaseHandler.getUid();
               // Extract chats list from Firestore snapshot
-              List<List<String>?>? chats = snapshot.data!.docs.map<List<String>?>((doc) {
-                var uid1 = doc['uid1'];
-                var uid2 = doc['uid2'];
-                // to see if you are getting the current user
-                // print(myChat)
-                // print uids to check if you are getting the right values
-                // print(uid1);
-                // print(uid2);
-                // check if they are not null
-                if (uid1 != null && uid2 != null) {
-                  if (uid2 != 'AI' && (uid1 == myChat || uid2 == myChat)) {
-                    return ['Person', doc.id];
-                  } else if (uid2 == 'AI' && uid1 == myChat) {
-                    return ['AI', doc.id];
-                  }
-                }
-                return null;
-                // get rid of null values so they don't go into chats,
-                // if they go into chats you get red screen.
-              }).where((chat) => chat != null).toList().cast<List<String>?>();
+              List<List<String>?>? chats = snapshot.data!.docs
+                  .map<List<String>?>((doc) {
+                    var uid1 = doc['uid1'];
+                    var uid2 = doc['uid2'];
+                    // to see if you are getting the current user
+                    // print(myChat)
+                    // print uids to check if you are getting the right values
+                    // print(uid1);
+                    // print(uid2);
+                    // check if they are not null
+                    if (uid1 != null && uid2 != null) {
+                      if (uid2 != 'AI' && (uid1 == myChat || uid2 == myChat)) {
+                        return ['Person', doc.id];
+                      } else if (uid2 == 'AI' && uid1 == myChat) {
+                        return ['AI', doc.id];
+                      }
+                    }
+                    return null;
+                    // get rid of null values so they don't go into chats,
+                    // if they go into chats you get red screen.
+                  })
+                  .where((chat) => chat != null)
+                  .toList()
+                  .cast<List<String>?>();
               // a lot of ! and ? when using chats indexes
               return ListView.builder(
                 itemCount: chats.length,
@@ -266,22 +254,23 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                           return AlertDialog(
                             content: Text(
                               "Are you sure you want to delete ${chats[index]?[0]}?",
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(color: white),
                             ),
                             actions: <Widget>[
                               TextButton(
                                 child: const Text(
                                   "Cancel",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(color: white),
                                 ),
                                 onPressed: () {
-                                  Navigator.of(context).pop(false); // Return false when canceled
+                                  Navigator.of(context)
+                                      .pop(false); // Return false when canceled
                                 },
                               ),
                               TextButton(
                                 child: const Text(
                                   "Delete",
-                                  style: TextStyle(color: Colors.red),
+                                  style: TextStyle(color: red),
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -291,7 +280,8 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                         .doc(chats[index]?[1])
                                         .delete();
                                   });
-                                  Navigator.of(context).pop(true); // Return true when deleted
+                                  Navigator.of(context)
+                                      .pop(true); // Return true when deleted
                                 },
                               ),
                             ],
@@ -301,13 +291,13 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                       return res;
                     },
                     background: Container(
-                      color: Colors.red, // Background color when swiping
+                      color: red, // Background color when swiping
                       alignment: Alignment.centerRight,
                       child: const Padding(
                         padding: EdgeInsets.only(right: 20.0),
                         child: Icon(
                           Icons.delete,
-                          color: Colors.white,
+                          color: white,
                         ),
                       ),
                     ),
@@ -316,13 +306,15 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                ChatPage(cid: chats[index]![1], title: chats[index]![0],),
+                            builder: (context) => ChatPage(
+                              cid: chats[index]![1],
+                              title: chats[index]![0],
+                            ),
                           ),
                         );
                       },
                       child: ListBoxWidget(
-                        title: '${index + 1}. ${chats[index]?[1]}',
+                        title: '${chats[index]?[1]}',
                         date: "03/19/2024",
                         username: _displayName,
                         marginVal: 5.0,
@@ -333,26 +325,6 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
               );
             },
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 1,
-          onTap: onTabTapped,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-              ),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline),
-              label: 'Chat',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Setting',
-            ),
-          ],
         ),
       ),
     );

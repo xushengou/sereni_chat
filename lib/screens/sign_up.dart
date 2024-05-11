@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:project/screens/homePage.dart';
+import 'package:project/screens/home.dart';
 import '../models/user_model.dart';
-import 'loginPage.dart';
+import 'login.dart';
 import '../databases/database_handler.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -63,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
           style: TextStyle(
             fontSize: 40,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: white,
           ),
         )
       ],
@@ -90,7 +90,7 @@ class _SignUpPageState extends State<SignUpPage> {
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: Colors.blue.shade100, //
+            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: Icon(Icons.person),
             errorText: _validateUsername ? "Username Can't be Empty" : null,
@@ -112,7 +112,7 @@ class _SignUpPageState extends State<SignUpPage> {
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: Colors.blue.shade100, //
+            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: Icon(Icons.email),
             errorText: _validateEmail ? "Email Can't be Empty" : null,
@@ -134,7 +134,7 @@ class _SignUpPageState extends State<SignUpPage> {
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: Colors.blue.shade100, //
+            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: Icon(Icons.lock),
           ),
@@ -154,7 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: Colors.blue.shade100, //
+            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: Icon(Icons.lock),
           ),
@@ -191,11 +191,11 @@ class _SignUpPageState extends State<SignUpPage> {
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: shaded_blue,
+            backgroundColor: darkShadedBlue,
           ),
           child: const Text(
             "Sign Up",
-            style: TextStyle(fontSize: 20, color: secondary_color),
+            style: TextStyle(fontSize: 20, color: white),
           ),
         )
       ],

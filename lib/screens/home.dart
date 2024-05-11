@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
-import 'package:project/screens/chatNavScreen.dart';
-import 'package:project/screens/gratefulnessPage.dart';
-import 'package:project/screens/settingsPage.dart';
+import 'package:project/screens/chat_navigation.dart';
+import 'package:project/screens/gratefulness.dart';
+import 'package:project/screens/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,7 +13,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   String _displayName = '';
   List<String> dailyOptions = <String>["Awesome!", "It's Okay~", "Horriable!"];
   var _dailyValue;
@@ -42,18 +41,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void onTabTapped(int index) {
-    if(index == 0){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
-    }
-    else if(index == 1){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatNavScreen()));
-    }
-    else{
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage()));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,41 +52,44 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _displayName.length > 15 ? '${_displayName.substring(0, 15)}...' : _displayName,
+                _displayName.length > 15
+                    ? '${_displayName.substring(0, 15)}...'
+                    : _displayName,
                 style: const TextStyle(
-                  color: secondary_color,
+                  color: white,
                   fontSize: 30.0,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20.0,
-                ),
-                child: IconButton.outlined(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage()));
-                  },
-                  icon: const Icon(
-                    Icons.person,
-                  ),
-                  iconSize: 40.0,
-                  style: ButtonStyle(
-                    side: MaterialStateProperty.all(
-                      const BorderSide(
-                          color: Colors.black,
-                          width: 2.0,
-                          style: BorderStyle.solid),
-                    ),
-                  ),
-                ),
-              )
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(
+              //     vertical: 20.0,
+              //   ),
+              //   child: IconButton.outlined(
+              //     onPressed: () {
+              //       Navigator.push(
+              //           context,
+              //           MaterialPageRoute(
+              //               builder: (context) => const SettingsPage()));
+              //     },
+              //     icon: const Icon(
+              //       Icons.person,
+              //     ),
+              //     iconSize: 40.0,
+              //     style: ButtonStyle(
+              //       side: MaterialStateProperty.all(
+              //         const BorderSide(
+              //             color: black, width: 2.0, style: BorderStyle.solid),
+              //       ),
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ),
         // actions: [
         //
         // ],
-        backgroundColor: primary_color,
+        backgroundColor: darkTheme1,
       ),
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
@@ -121,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                       "How's your day?",
                       style: TextStyle(
                         fontSize: 25,
-                        color: secondary_color,
+                        color: white,
                       ),
                     ),
                   ),
@@ -129,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                 ListTile(
                   title: Text(
                     dailyOptions[0],
-                    style: const TextStyle(color: secondary_color),
+                    style: const TextStyle(color: white),
                   ),
                   leading: Radio<String>(
                     value: dailyOptions[0],
@@ -144,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                 ListTile(
                   title: Text(
                     dailyOptions[1],
-                    style: const TextStyle(color: secondary_color),
+                    style: const TextStyle(color: white),
                   ),
                   leading: Radio<String>(
                     value: dailyOptions[1],
@@ -159,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                 ListTile(
                   title: Text(
                     dailyOptions[2],
-                    style: const TextStyle(color: secondary_color),
+                    style: const TextStyle(color: white),
                   ),
                   leading: Radio<String>(
                     value: dailyOptions[2],
@@ -179,7 +169,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
                 width: double.maxFinite,
                 child: DecoratedBox(
-                  decoration: const BoxDecoration(color: mainGrey),
+                  decoration: const BoxDecoration(color: darkShadedWhite),
                   child: TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -191,7 +181,7 @@ class _HomePageState extends State<HomePage> {
                       'Complete your gratefulness',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: secondary_color,
+                        color: white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -208,7 +198,7 @@ class _HomePageState extends State<HomePage> {
                     "Feeling tired? Unhappy? Feeling that no one understands you?",
                     style: TextStyle(
                       fontSize: 20,
-                      color: secondary_color,
+                      color: white,
                     ),
                   ),
                   const SizedBox(
@@ -224,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                             "Tips:",
                             style: TextStyle(
                               fontSize: 16,
-                              color: secondary_color,
+                              color: white,
                             ),
                           ),
                         ),
@@ -242,7 +232,7 @@ class _HomePageState extends State<HomePage> {
                               child: Text(
                                 '${index + 1}) ${tips[index]}',
                                 style: const TextStyle(
-                                  color: secondary_color,
+                                  color: white,
                                   fontSize: 16.0,
                                 ),
                               ),
@@ -257,26 +247,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: onTabTapped,
-        currentIndex: 0,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Setting',
-          ),
-        ],
       ),
     );
   }

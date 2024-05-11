@@ -1,12 +1,13 @@
-import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project/color_const.dart';
 import 'package:project/databases/database_handler.dart';
 import '../models/message_model.dart';
 import '../widgets/chattxt_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class ChatPage extends StatefulWidget {
   final String cid;
@@ -19,8 +20,6 @@ class ChatPage extends StatefulWidget {
 }
 
 class _EditChatPageState extends State<ChatPage> {
-  late final OpenAI _openAI;
-  bool _isLoading = true;
   String? answer;
 
   final TextEditingController _bodyController = TextEditingController();
@@ -28,39 +27,54 @@ class _EditChatPageState extends State<ChatPage> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  @override
-  void initState() {
-    // Initialize ChatGPT SDK
-    _openAI = OpenAI.instance.build(
-      token: dotenv.env['OPENAI_API_KEY'],
-      baseOption: HttpSetup(
-        receiveTimeout: const Duration(seconds: 30),
-      ),
-    );
-    _handleInitialMessage();
-    super.initState();
-  }
+  /// Sends a POST request to the server.
+  Future<void> sendPostRequest() async {
+    var url = Uri.parse('https://sereni-server.onrender.com/get_advice');
 
-  Future<void> _handleInitialMessage() async {
-    String userPrompt = _bodyController.text;
+    //1. Starts when the user writes a message and taps on the send button
+    //2. Get the chat history between the user and ChatGPT so far based on
+    // what is in the database
+    //3. Take the user's new message (which has not been saved yet), and add it
+    // to the chat history Map made in step 2.
+    //4. Send the chat history Map in the JSON payload
+    //5. Send POST request and wait for response
+    //6. Decode the returned JSON from the server to get ChatGPT's response
+    //7. Update the database with 2 new messages: user's and ChatGPT's
 
-    final request = ChatCompleteText(
-      messages: [
-        Messages(
-          role: Role.user,
-          content: userPrompt,
-        ),
-      ],
-      maxToken: 500,
-      model: GptTurbo0631Model(),
-    );
+    Map<String, String> chat_history = {};
 
-    ChatCTResponse? response = await _openAI.onChatCompletion(request: request);
+    // Create the payload.
+    /*
+    Map<String, String>
+    {
+      "User": "MESSAGE_1",
+      "ChatGPT": "MESSAGE_2",
+    }
+    */
 
-    setState(() {
-      answer = response!.choices.first.message!.content.trim();
-      _isLoading = false;
-    });
+    var payload = {
+      "HISTORY": currentFormResponse["GOAL"].toString(),
+    };
+    var body = json.encode(payload);
+
+    try {
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any additional headers if needed
+        },
+        body: body,
+      );
+      if (response.statusCode == 200) {
+        // Decode the response. This is a dictionary of String to dynamics
+        var jsonResponse = json.decode(response.body);
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   @override
@@ -70,13 +84,12 @@ class _EditChatPageState extends State<ChatPage> {
       child: Scaffold(
           resizeToAvoidBottomInset: true,
           appBar: AppBar(
-            iconTheme: const IconThemeData(color: Colors.white),
-            backgroundColor: primary_color,
-            // backgroundColor: Colors.white,
+            iconTheme: const IconThemeData(color: white),
+            backgroundColor: darkTheme1,
             title: Text(
               widget.title,
               style: const TextStyle(
-                color: secondary_color,
+                color: white,
               ),
             ),
           ),
@@ -161,7 +174,6 @@ class _EditChatPageState extends State<ChatPage> {
                                 'user': DatabaseHandler.getUid(),
                                 'timestamp': DateTime.now(),
                               };
-                              await _handleInitialMessage();
                               _bodyController.clear();
 
                               final messageAI = {
@@ -169,6 +181,7 @@ class _EditChatPageState extends State<ChatPage> {
                                 'user': 'AI',
                                 'timestamp': DateTime.now(),
                               };
+
                               setState(() => _firestore
                                       .collection('Chat Rooms')
                                       .doc(widget.cid)
@@ -204,6 +217,10 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // bool date = false;
+    // String currentDate =
+    // if()
+
     return Column(
       children: [
 
@@ -211,13 +228,13 @@ class MessageBubble extends StatelessWidget {
           alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
           child: Card(
             elevation: 8,
-            color: isMe ? shaded_blue : secondary_color,
+            color: isMe ? lightShadedBlue : white,
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Text(
                 message,
                 style: TextStyle(
-                  color: isMe ? Colors.white : Colors.black,
+                  color: isMe ? white : black,
                 ),
               ),
             ),
@@ -242,13 +259,13 @@ class DateBubble extends StatelessWidget {
         const SizedBox(height: 15,),
         Center(
           child: Card(
-            color: Colors.grey,
+            color: grey,
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: Text(
                 DateFormat('dd/MM/yyyy - HH:mm').format(timestamp),
                 style: const TextStyle(
-                  color: Colors.black,
+                  color: black,
                 ),
               ),
             ),

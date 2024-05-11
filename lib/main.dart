@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project/color_const.dart';
-import 'package:project/screens/chatNavScreen.dart';
-import 'package:project/screens/chatPage.dart';
-import 'package:project/screens/gratefulnessPage.dart';
-import 'package:project/screens/homePage.dart';
-import 'package:project/screens/loginPage.dart';
-import 'package:project/screens/signUpPage.dart';
-import 'package:project/screens/settingsPage.dart';
+import 'package:project/screens/Navbar.dart';
+import 'package:project/screens/gratefulness.dart';
+import 'package:project/screens/login.dart';
+import 'package:project/screens/sign_up.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -31,17 +28,15 @@ class MyApp extends StatelessWidget {
       title: 'Test',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(
-          backgroundColor: primary_color,
+          backgroundColor: darkTheme1,
         ),
       ),
       initialRoute: 'loginPage',
       routes: {
-        'homePage': (context) => const HomePage(),
         'loginPage': (context) => const LoginPage(),
         'signUpPage': (context) => const SignUpPage(),
         'gratefulnessPage': (context) => const GratefulnessPage(),
-        'settingPage': (context) => const SettingsPage(),
-        'chatnavscreen': (context) => const ChatNavScreen(),
+        'navPage': (context) => const Navbar(),
       },
     );
   }

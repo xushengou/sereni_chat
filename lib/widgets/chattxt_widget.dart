@@ -23,18 +23,18 @@ class ChatTXTWidget extends StatelessWidget {
       minLines: 1,
       style: const TextStyle(
         // fontSize: fontSize,
-        color: Colors.white70,
+        color: lightShadedWhite,
         fontFamily: "Poppins",
       ),
       decoration: InputDecoration(
         // Hint text:
         hintText: hintText,
         hintStyle: const TextStyle(
-          color: Colors.white38,
+          color: darkShadedWhite,
         ),
 
         filled: true,
-        fillColor: primary_color,
+        fillColor: darkTheme1,
         // Border
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25.0),

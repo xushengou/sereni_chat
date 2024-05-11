@@ -1,14 +1,17 @@
 import "package:flutter/material.dart";
 
-// Black, Black theme (background, text)
-const primary_color = Color.fromARGB(255, 41, 47, 63);
+// Dark Theme
+const darkTheme1 = Color.fromARGB(255, 41, 47, 63);
 
-// White theme (background, text)
-const secondary_color = Colors.white;
-
-var shaded_blue = Colors.blue.shade600;
-const blue = Colors.blue;
+const white = Colors.white;
 const black = Colors.black;
-const mainGrey = Color.fromARGB(100, 217, 217, 217);
-const whiteGrey = Color.fromARGB(190, 250,250,250);
-const subTextColor = Color.fromARGB(100, 191, 191, 191);
+const grey = Colors.grey;
+const blue = Colors.blue;
+const red = Colors.red;
+const lightShadedWhite = Colors.white70;
+const darkShadedWhite = Colors.white38;
+final darkShadedGrey = Colors.grey.shade800;
+final lightShadedBlue = Colors.blue.shade100;
+final darkShadedBlue = Colors.blue.shade600;
+
+// Light Theme
