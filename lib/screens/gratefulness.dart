@@ -31,24 +31,20 @@ class _GratefulnessPageState extends State<GratefulnessPage> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
-        body: Expanded(
-          child: Container(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(8),
-              itemCount: gratefulnessList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListBoxWidget(
-                  title: '${index + 1}. ${gratefulnessList[index]}',
-                  date: "03/19/2024",
-                  username: "username",
-                  marginVal: 5.0,
-                  maxLength: 100,
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
-            ),
-          ),
+        body: ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: gratefulnessList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListBoxWidget(
+              title: '${index + 1}. ${gratefulnessList[index]}',
+              date: "03/19/2024",
+              username: "username",
+              marginVal: 5.0,
+              maxLength: 100,
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) =>
+              const Divider(),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => showDialog<String>(
@@ -79,7 +75,7 @@ class _GratefulnessPageState extends State<GratefulnessPage> {
               ),
             ),
           ),
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           child: const Icon(
             Icons.add,
             color: Colors.black,

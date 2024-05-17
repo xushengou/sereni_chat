@@ -152,12 +152,26 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                               Navigator.pop(
                                   context); // remove the pop up screen
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ChatPage(
-                                            cid: cid,
-                                            title: 'AI',
-                                          )));
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (context, animation, secondaryAnimation) => ChatPage(
+                                      cid: cid,
+                                      title: 'AI',
+                                    ),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child){
+                                      var begin = const Offset(0.0, 1.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.ease;
+
+                                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    }
+                                ),
+                              );
                               chats.add(["AI ${chats.length}", cid]);
                             },
                             child: Text(
@@ -174,15 +188,32 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                               if (!context.mounted) return;
                               Navigator.pop(context);
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ChatPage(
-                                            cid: cid,
-                                            title: 'Person',
-                                          )));
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (context, animation, secondaryAnimation) => ChatPage(
+                                      cid: cid,
+                                      title: 'Person',
+                                    ),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child){
+                                      var begin = const Offset(0.0, 1.0);
+                                      var end = Offset.zero;
+                                      var curve = Curves.ease;
+
+                                      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                                      return SlideTransition(
+                                        position: animation.drive(tween),
+                                        child: child,
+                                      );
+                                    }
+                                ),
+                              );
                               chats.add(["Anonymous ${chats.length}", cid]);
                             },
-                            child: Text('Find', style: Theme.of(context).textTheme.titleMedium,),
+                            child: Text(
+                              'Find',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
                           ),
                         ],
                       ),
@@ -301,16 +332,29 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => ChatPage(
-                              cid: chats[index]![1],
-                              title: chats[index]![0],
-                            ),
+                          PageRouteBuilder(
+                              pageBuilder: (context, animation, secondaryAnimation) => ChatPage(
+                                cid: chats[index]![1],
+                                title: chats[index]![0],
+                              ),
+                              transitionsBuilder: (context, animation, secondaryAnimation, child){
+                                var begin = const Offset(0.0, 1.0);
+                                var end = Offset.zero;
+                                var curve = Curves.ease;
+
+                                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              }
                           ),
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+                        padding: const EdgeInsets.only(
+                            left: 10.0, right: 10.0, top: 10.0),
                         child: ListBoxWidget(
                           title: '${chats[index]?[1]}',
                           date: "03/19/2024",

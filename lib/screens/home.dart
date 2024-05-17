@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project/screens/gratefulness.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle. - Christian D. Larson",
     "The only thing that stands between you and your dream is the will to try and the belief that it is actually possible. - Joel Brown"
   ];
-  List<String> dailyQuotes = <String> [];
+  List<String> dailyQuotes = <String>[];
 
   @override
   void initState() {
@@ -68,7 +69,7 @@ class _HomePageState extends State<HomePage> {
     getUserDisplayName();
   }
 
-  void getDailyQuote(){
+  void getDailyQuote() {
     Random random = Random();
     dailyQuotes.add(quotes[random.nextInt(quotes.length)]);
     dailyQuotes.add(quotes[random.nextInt(quotes.length)]);
@@ -95,12 +96,10 @@ class _HomePageState extends State<HomePage> {
         title: Padding(
           padding: const EdgeInsets.only(left: 5.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                _displayName.length > 15
-                    ? '${_displayName.substring(0, 15)}...'
-                    : _displayName,
+                "Home",
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
             ],
@@ -188,13 +187,28 @@ class _HomePageState extends State<HomePage> {
                   child: OutlinedButton(
                     onPressed: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const GratefulnessPage()));
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => const GratefulnessPage(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child){
+                            var begin = Offset(1.0, 1.0);
+                            var end = Offset.zero;
+                            var curve = Curves.ease;
+
+                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          }
+                        ),
+                      );
                     },
                     style: OutlinedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
                       side: const BorderSide(
                         color: Colors.transparent,
                       ),
@@ -230,8 +244,7 @@ class _HomePageState extends State<HomePage> {
                             height: 50,
                             child: Text(
                               '${index + 1}) ${dailyQuotes[index]}',
-                              style:
-                                  Theme.of(context).textTheme.titleMedium,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                           );
                         },

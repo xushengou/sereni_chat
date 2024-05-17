@@ -28,25 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           physics: const ScrollPhysics(),
-          child: SettingsList(
-            sections: [
-              SettingsSection(
-                title: Text('General'),
-                tiles: [
-                  SettingsTile.navigation(
-                    leading: Icon(Icons.person),
-                    title: Text('Account'),
-                  ),
-                  SettingsTile.switchTile(
-                    title: Text('Dark Mode'),
-                    leading: Icon(Icons.dark_mode),
-                    onToggle: (bool value) {},
-                    initialValue: false,
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: Container(),
         ),
       ),
     );
