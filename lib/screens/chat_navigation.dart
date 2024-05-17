@@ -3,9 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project/databases/database_handler.dart';
 import 'package:project/screens/chat_room.dart';
-import 'package:project/screens/home.dart';
-import 'package:project/screens/settings.dart';
-import '../color_const.dart';
+import 'package:project/themes.dart';
 import '../widgets/list_box_widget.dart';
 
 class ChatNavScreen extends StatefulWidget {
@@ -120,18 +118,15 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: darkTheme1,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           title: Padding(
             padding: const EdgeInsets.only(left: 5.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   "Chats",
-                  style: TextStyle(
-                    color: white,
-                    fontSize: 30.0,
-                  ),
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -141,11 +136,9 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                     onPressed: () => showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        title: const Text(
+                        title: Text(
                           'Create new Chat',
-                          style: TextStyle(
-                            color: white,
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         actions: <Widget>[
                           TextButton(
@@ -167,7 +160,10 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                           )));
                               chats.add(["AI ${chats.length}", cid]);
                             },
-                            child: const Text('AiBot'),
+                            child: Text(
+                              'AiBot',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
                           ),
                           TextButton(
                             onPressed: () async {
@@ -186,14 +182,14 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                                           )));
                               chats.add(["Anonymous ${chats.length}", cid]);
                             },
-                            child: const Text('Find'),
+                            child: Text('Find', style: Theme.of(context).textTheme.titleMedium,),
                           ),
                         ],
                       ),
                     ),
                     icon: const Icon(
                       Icons.add,
-                      color: white,
+                      color: Colors.white,
                     ),
                     iconSize: 40.0,
                   ),
@@ -254,13 +250,13 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                           return AlertDialog(
                             content: Text(
                               "Are you sure you want to delete ${chats[index]?[0]}?",
-                              style: const TextStyle(color: white),
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             actions: <Widget>[
                               TextButton(
-                                child: const Text(
+                                child: Text(
                                   "Cancel",
-                                  style: TextStyle(color: white),
+                                  style: Theme.of(context).textTheme.titleSmall,
                                 ),
                                 onPressed: () {
                                   Navigator.of(context)
@@ -270,7 +266,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                               TextButton(
                                 child: const Text(
                                   "Delete",
-                                  style: TextStyle(color: red),
+                                  style: TextStyle(color: Colors.red),
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -291,13 +287,13 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                       return res;
                     },
                     background: Container(
-                      color: red, // Background color when swiping
+                      color: Colors.red, // Background color when swiping
                       alignment: Alignment.centerRight,
                       child: const Padding(
                         padding: EdgeInsets.only(right: 20.0),
                         child: Icon(
                           Icons.delete,
-                          color: white,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -313,11 +309,15 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                           ),
                         );
                       },
-                      child: ListBoxWidget(
-                        title: '${chats[index]?[1]}',
-                        date: "03/19/2024",
-                        username: _displayName,
-                        marginVal: 5.0,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+                        child: ListBoxWidget(
+                          title: '${chats[index]?[1]}',
+                          date: "03/19/2024",
+                          username: _displayName,
+                          marginVal: 5.0,
+                          maxLength: 12,
+                        ),
                       ),
                     ),
                   );

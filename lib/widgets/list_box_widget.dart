@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:project/color_const.dart';
 
 class ListBoxWidget extends StatelessWidget {
   final String? title;
   final String? date;
   final String? username;
   final double? marginVal;
+  final int maxLength;
 
   // current date in mm/dd/yyyy
   // DateTime now = DateTime.now();
@@ -17,6 +17,7 @@ class ListBoxWidget extends StatelessWidget {
     this.date,
     this.username,
     this.marginVal,
+    required this.maxLength,
   });
 
   @override
@@ -25,7 +26,7 @@ class ListBoxWidget extends StatelessWidget {
       margin: EdgeInsets.all(marginVal as double),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: darkShadedWhite,
+        color: Theme.of(context).colorScheme.primary,
       ),
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -34,12 +35,8 @@ class ListBoxWidget extends StatelessWidget {
             children: [
               //Title
               Text(
-                "${title}".length > 12 ? "${title}".substring(0, 12)+'...' : "${title}",
-                style: const TextStyle(
-                  color: white,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
+                "${title}".length > maxLength ? "${title}".substring(0, maxLength)+'...' : "${title}",
+                style: Theme.of(context).textTheme.titleLarge,
               ),
 
               const SizedBox(
@@ -48,11 +45,7 @@ class ListBoxWidget extends StatelessWidget {
 
               Text(
                 "${date}",
-                style: TextStyle(
-                  color: darkShadedGrey,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleSmall,
               )
             ],
           ),

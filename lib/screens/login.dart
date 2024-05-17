@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:project/color_const.dart';
 import 'package:project/screens/sign_up.dart';
 
 class LoginPage extends StatefulWidget {
@@ -37,15 +36,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _logoName(context) {
-    return const Column(
+    return Column(
       children: [
         Text(
           "SereniChat",
-          style: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
-            color: white,
-          ),
+          style: Theme.of(context).textTheme.displayMedium,
         )
       ],
     );
@@ -61,14 +56,11 @@ class _LoginPageState extends State<LoginPage> {
           },
           decoration: InputDecoration(
             hintText: "email",
-            hintStyle: const TextStyle(
-              color: black,
-            ),
+            hintStyle: Theme.of(context).textTheme.titleLarge,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: const Icon(Icons.email),
           ),
@@ -82,14 +74,11 @@ class _LoginPageState extends State<LoginPage> {
           },
           decoration: InputDecoration(
             hintText: "password",
-            hintStyle: const TextStyle(
-              color: black,
-            ),
+            hintStyle: Theme.of(context).textTheme.titleLarge,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: const Icon(Icons.lock),
           ),
@@ -113,14 +102,10 @@ class _LoginPageState extends State<LoginPage> {
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: darkShadedBlue,
           ),
-          child: const Text(
+          child: Text(
             "Login",
-            style: TextStyle(
-              fontSize: 20,
-              color: white,
-            ),
+            style: Theme.of(context).textTheme.titleMedium,
           ),
         )
       ],
@@ -130,9 +115,9 @@ class _LoginPageState extends State<LoginPage> {
   _forgotPassword(context) {
     return TextButton(
       onPressed: () {},
-      child: const Text(
+      child: Text(
         "Forgot password?",
-        style: TextStyle(color: blue),
+        style: Theme.of(context).textTheme.titleSmall,
       ),
     );
   }
@@ -141,20 +126,18 @@ class _LoginPageState extends State<LoginPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           "Don't have an account?",
-          style: TextStyle(
-            color: blue,
-          ),
+          style: Theme.of(context).textTheme.titleSmall,
         ),
         TextButton(
           onPressed: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const SignUpPage()));
           },
-          child: const Text(
+          child: Text(
             'Sign Up',
-            style: TextStyle(color: blue),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         )
       ],

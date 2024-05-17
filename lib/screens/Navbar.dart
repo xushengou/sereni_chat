@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:project/screens/settings.dart';
-
 import 'chat_navigation.dart';
 import 'home.dart';
 
@@ -23,7 +22,8 @@ class _NavbarState extends State<Navbar> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: Colors.amber,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        indicatorColor: Theme.of(context).colorScheme.primary,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
@@ -33,11 +33,13 @@ class _NavbarState extends State<Navbar> {
           ),
           NavigationDestination(
             // icon: Badge(child: Icon(Icons.notifications_sharp)),
-            icon: Icon(Icons.notifications_sharp),
+            selectedIcon: Icon(Icons.notifications_sharp),
+            icon: Icon(Icons.notifications_outlined),
             label: 'Chat',
           ),
           NavigationDestination(
-            icon: Icon(Icons.messenger_sharp),
+            selectedIcon: Icon(Icons.message_sharp),
+            icon: Icon(Icons.message_outlined),
             label: 'Settings',
           ),
         ],

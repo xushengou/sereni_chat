@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../color_const.dart';
-
 class changeSettingsPage extends StatefulWidget {
   final String setting;
   const changeSettingsPage({super.key, required this.setting});
@@ -18,7 +16,7 @@ class _changeSettingsPageState extends State<changeSettingsPage> {
         title: Text(
           widget.setting,
           style: const TextStyle(
-            color: white,
+            color: Colors.white,
             fontSize: 30.0,
           ),
         ),

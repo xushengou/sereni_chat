@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:project/color_const.dart';
 
 class ChatTXTWidget extends StatelessWidget {
   final int? maxLines;
@@ -18,27 +17,26 @@ class ChatTXTWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      cursorColor: Colors.black,
       maxLines: maxLines,
       controller: controller,
       minLines: 1,
-      style: const TextStyle(
-        // fontSize: fontSize,
-        color: lightShadedWhite,
-        fontFamily: "Poppins",
-      ),
+      style: Theme.of(context).textTheme.titleSmall,
       decoration: InputDecoration(
         // Hint text:
         hintText: hintText,
-        hintStyle: const TextStyle(
-          color: darkShadedWhite,
-        ),
+        hintStyle: Theme.of(context).textTheme.titleSmall,
 
         filled: true,
-        fillColor: darkTheme1,
+        fillColor: Theme.of(context).colorScheme.primary,
         // Border
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25.0),
-          borderSide: const BorderSide(),
+          borderRadius: BorderRadius.circular(15.0),
+          borderSide: const BorderSide(
+              width: 0.0,
+              style: BorderStyle.none,
+              // color: Theme.of(context).colorScheme.secondary,
+          ),
         ),
       ),
     );

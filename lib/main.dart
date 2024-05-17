@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:project/color_const.dart';
 import 'package:project/screens/Navbar.dart';
 import 'package:project/screens/gratefulness.dart';
 import 'package:project/screens/login.dart';
 import 'package:project/screens/sign_up.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:project/themes.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -26,11 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Test',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(
-          backgroundColor: darkTheme1,
-        ),
-      ),
+      theme: lightTheme,
       initialRoute: 'loginPage',
       routes: {
         'loginPage': (context) => const LoginPage(),

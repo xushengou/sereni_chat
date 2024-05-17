@@ -1,11 +1,9 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:project/color_const.dart';
 import 'package:project/databases/database_handler.dart';
 import '../models/message_model.dart';
-import '../widgets/chattxt_widget.dart';
+import '../widgets/text_box_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -53,7 +51,7 @@ class _EditChatPageState extends State<ChatPage> {
     */
 
     var payload = {
-      "HISTORY": currentFormResponse["GOAL"].toString(),
+      "HISTORY": chat_history.toString(),
     };
     var body = json.encode(payload);
 
@@ -84,13 +82,11 @@ class _EditChatPageState extends State<ChatPage> {
       child: Scaffold(
           resizeToAvoidBottomInset: true,
           appBar: AppBar(
-            iconTheme: const IconThemeData(color: white),
-            backgroundColor: darkTheme1,
+            iconTheme: const IconThemeData(color: Colors.black),
+            backgroundColor: Theme.of(context).colorScheme.primary,
             title: Text(
               widget.title,
-              style: const TextStyle(
-                color: white,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
           body: SafeArea(
@@ -145,15 +141,10 @@ class _EditChatPageState extends State<ChatPage> {
                             maxLines: 6,
                             fontSize: 10,
                             controller: _bodyController,
-                            hintText: 'Let it go!',
+                            hintText: 'Enter Text Here: ',
                           ),
                         ),
                         TextButton(
-                          style: TextButton.styleFrom(
-                            textStyle: const TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
                           onPressed: () async {
                             if (widget.title == 'Person') {
                               final message = {
@@ -191,7 +182,11 @@ class _EditChatPageState extends State<ChatPage> {
                                   }));
                             }
                           },
-                          child: const Icon(Icons.arrow_upward),
+                          child: Icon(
+                            Icons.arrow_upward,
+                            size: 30.0,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                         ),
                       ],
                     ),
@@ -223,18 +218,18 @@ class MessageBubble extends StatelessWidget {
 
     return Column(
       children: [
-
         Align(
           alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
           child: Card(
             elevation: 8,
-            color: isMe ? lightShadedBlue : white,
+            color: isMe ? Colors.blue.shade100 : Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Text(
                 message,
                 style: TextStyle(
-                  color: isMe ? white : black,
+                  color:
+                      isMe ? const Color.fromARGB(255, 62, 62, 62) : Colors.black,
                 ),
               ),
             ),
@@ -248,24 +243,24 @@ class MessageBubble extends StatelessWidget {
 class DateBubble extends StatelessWidget {
   final DateTime timestamp;
 
-  const DateBubble(
-      {super.key,
-        required this.timestamp});
+  const DateBubble({super.key, required this.timestamp});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 15,),
+        const SizedBox(
+          height: 15,
+        ),
         Center(
           child: Card(
-            color: grey,
+            color: Colors.grey,
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: Text(
                 DateFormat('dd/MM/yyyy - HH:mm').format(timestamp),
                 style: const TextStyle(
-                  color: black,
+                  color: Colors.black,
                 ),
               ),
             ),

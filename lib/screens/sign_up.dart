@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:project/color_const.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project/screens/home.dart';
 import '../models/user_model.dart';
 import 'login.dart';
 import '../databases/database_handler.dart';
+import 'package:project/themes.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -56,15 +56,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   _logoName(context) {
-    return const Column(
+    return Column(
       children: [
         Text(
           "Sign Up",
-          style: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
-            color: white,
-          ),
+          style: Theme.of(context).textTheme.displayMedium,
         )
       ],
     );
@@ -83,14 +79,11 @@ class _SignUpPageState extends State<SignUpPage> {
           controller: _usernameController,
           decoration: InputDecoration(
             hintText: "username",
-            hintStyle: const TextStyle(
-              color: black,
-            ),
+            hintStyle: Theme.of(context).textTheme.titleLarge,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: Icon(Icons.person),
             errorText: _validateUsername ? "Username Can't be Empty" : null,
@@ -105,14 +98,11 @@ class _SignUpPageState extends State<SignUpPage> {
           },
           decoration: InputDecoration(
             hintText: "email",
-            hintStyle: const TextStyle(
-              color: black,
-            ),
+            hintStyle: Theme.of(context).textTheme.titleLarge,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: Icon(Icons.email),
             errorText: _validateEmail ? "Email Can't be Empty" : null,
@@ -127,14 +117,11 @@ class _SignUpPageState extends State<SignUpPage> {
           },
           decoration: InputDecoration(
             hintText: "password",
-            hintStyle: const TextStyle(
-              color: black,
-            ),
+            hintStyle: Theme.of(context).textTheme.titleLarge,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: Icon(Icons.lock),
           ),
@@ -147,14 +134,11 @@ class _SignUpPageState extends State<SignUpPage> {
           onChanged: (value) {},
           decoration: InputDecoration(
             hintText: "re-enter password",
-            hintStyle: const TextStyle(
-              color: black,
-            ),
+            hintStyle: Theme.of(context).textTheme.titleLarge,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: lightShadedBlue,
             filled: true,
             prefixIcon: Icon(Icons.lock),
           ),
@@ -191,11 +175,10 @@ class _SignUpPageState extends State<SignUpPage> {
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: darkShadedBlue,
           ),
-          child: const Text(
+          child: Text(
             "Sign Up",
-            style: TextStyle(fontSize: 20, color: white),
+            style: Theme.of(context).textTheme.titleMedium,
           ),
         )
       ],
@@ -206,20 +189,18 @@ class _SignUpPageState extends State<SignUpPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           "Already have an account?",
-          style: TextStyle(
-            color: blue,
-          ),
+          style: Theme.of(context).textTheme.titleSmall,
         ),
         TextButton(
           onPressed: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const LoginPage()));
           },
-          child: const Text(
+          child: Text(
             'Login',
-            style: TextStyle(color: blue),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         )
       ],
