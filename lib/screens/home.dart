@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
-import 'package:project/screens/chat_navigation.dart';
 import 'package:project/screens/gratefulness.dart';
-import 'package:project/screens/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,12 +12,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _displayName = '';
-  List<String> dailyOptions = <String>["Awesome!", "It's Okay~", "Horriable!"];
-  var _dailyValue;
+  List<String> dailyOptions = [
+    "Awesome!",
+    "It's Okay.",
+    "Horrible!",
+  ];
+  String _dailyValue = '';
+
   List<String> tips = <String>[
     "Interact with friends",
-    "Share out your trouble",
-    "",
+    "Talk about your feelings with others",
+    "Get some fresh air",
   ];
 
   @override
@@ -41,6 +44,101 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Widget currentStatus() {
+    List<Widget> choices = [];
+    for (int i = 0; i < dailyOptions.length; i++) {
+      choices.add(
+        ListTile(
+          title: Text(
+            dailyOptions[i],
+            style: const TextStyle(color: white),
+          ),
+          leading: Radio<String>(
+            value: dailyOptions[i],
+            groupValue: _dailyValue,
+            onChanged: (String? value) {
+              setState(() {
+                _dailyValue = value!;
+              });
+            },
+          ),
+        )
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 20.0),
+          child: Text(
+            "How's your day going?",
+            style: TextStyle(
+              fontSize: 25,
+              color: white,
+            ),
+          ),
+        ),
+        Column(
+          children: choices,
+        )
+      ],
+    );
+  }
+
+  Widget tipsAndAdvice() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Column(
+        children: [
+          const Text(
+            "Feeling tired? Unhappy? Feeling that no one understands you?",
+            style: TextStyle(
+              fontSize: 20,
+              color: white,
+            ),
+          ),
+          const SizedBox(
+            height: 10.0,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Tips:",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: white,
+                ),
+              ),
+              const SizedBox(
+                height: 5.0,
+              ),
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(8),
+                itemCount: tips.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return SizedBox(
+                    height: 50,
+                    child: Text(
+                      '${index + 1}) ${tips[index]}',
+                      style: const TextStyle(
+                        color: white,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,109 +158,16 @@ class _HomePageState extends State<HomePage> {
                   fontSize: 30.0,
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(
-              //     vertical: 20.0,
-              //   ),
-              //   child: IconButton.outlined(
-              //     onPressed: () {
-              //       Navigator.push(
-              //           context,
-              //           MaterialPageRoute(
-              //               builder: (context) => const SettingsPage()));
-              //     },
-              //     icon: const Icon(
-              //       Icons.person,
-              //     ),
-              //     iconSize: 40.0,
-              //     style: ButtonStyle(
-              //       side: MaterialStateProperty.all(
-              //         const BorderSide(
-              //             color: black, width: 2.0, style: BorderStyle.solid),
-              //       ),
-              //     ),
-              //   ),
-              // )
             ],
           ),
         ),
-        // actions: [
-        //
-        // ],
         backgroundColor: darkTheme1,
       ),
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: Column(
           children: [
-            const SizedBox(
-              height: 20.0,
-            ),
-            Column(
-              children: [
-                const SizedBox(
-                  height: 30.0,
-                ),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 20.0),
-                    child: Text(
-                      "How's your day?",
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: white,
-                      ),
-                    ),
-                  ),
-                ),
-                ListTile(
-                  title: Text(
-                    dailyOptions[0],
-                    style: const TextStyle(color: white),
-                  ),
-                  leading: Radio<String>(
-                    value: dailyOptions[0],
-                    groupValue: _dailyValue,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _dailyValue = value;
-                      });
-                    },
-                  ),
-                ),
-                ListTile(
-                  title: Text(
-                    dailyOptions[1],
-                    style: const TextStyle(color: white),
-                  ),
-                  leading: Radio<String>(
-                    value: dailyOptions[1],
-                    groupValue: _dailyValue,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _dailyValue = value;
-                      });
-                    },
-                  ),
-                ),
-                ListTile(
-                  title: Text(
-                    dailyOptions[2],
-                    style: const TextStyle(color: white),
-                  ),
-                  leading: Radio<String>(
-                    value: dailyOptions[2],
-                    groupValue: _dailyValue,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _dailyValue = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
+            currentStatus(),
             const SizedBox(
               height: 20.0,
             ),
@@ -190,61 +195,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 20.0,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Column(
-                children: [
-                  const Text(
-                    "Feeling tired? Unhappy? Feeling that no one understands you?",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: white,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Column(
-                      children: [
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Tips:",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: white,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5.0,
-                        ),
-                        ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(8),
-                          itemCount: tips.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return SizedBox(
-                              height: 50,
-                              child: Text(
-                                '${index + 1}) ${tips[index]}',
-                                style: const TextStyle(
-                                  color: white,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            tipsAndAdvice()
           ],
         ),
       ),

@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
@@ -7,7 +7,6 @@ import 'package:project/databases/database_handler.dart';
 import '../models/message_model.dart';
 import '../widgets/chattxt_widget.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 
 class ChatPage extends StatefulWidget {
   final String cid;
@@ -25,41 +24,63 @@ class _EditChatPageState extends State<ChatPage> {
   final TextEditingController _bodyController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Future<dynamic> getMessageHistory() async {
+    final db = FirebaseFirestore.instance;
+    final docRef = db.collection('Chat Rooms').doc(widget.cid);
+    return docRef.get().then((DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>; // Gives you the document as a Map
+        final List<dynamic> messagesData = data['messages'];
+
+        List<MessageModel> messages = messagesData.map((message) {
+          return MessageModel(
+            message: message['message'] ?? '',
+            user: message['user'] ?? "",
+            timestamp: (message['timestamp'] as Timestamp).toDate() ?? DateTime.now(),
+          );
+        }).toList();
+
+        Map<String, String> chatHistory = {};
+        for (int i = 0; i < messages.length; i++) {
+          MessageModel message = messages.elementAt(i);
+          String userType = message.user == "AI"? "ChatGPT": "User";
+          chatHistory["${i}_$userType"] = message.message;
+        }
+
+        return chatHistory;
+      },
+      onError: (e) {
+        print("Error getting document: $e");
+        return null;
+      },
+    );
+  }
 
   /// Sends a POST request to the server.
   Future<void> sendPostRequest() async {
-    var url = Uri.parse('https://sereni-server.onrender.com/get_advice');
+    // 1. Starts when the user writes a message and taps on the send button
+    // See send button.
 
-    //1. Starts when the user writes a message and taps on the send button
-    //2. Get the chat history between the user and ChatGPT so far based on
+    // 2. Get the chat history between the user and ChatGPT so far based on
     // what is in the database
-    //3. Take the user's new message (which has not been saved yet), and add it
-    // to the chat history Map made in step 2.
-    //4. Send the chat history Map in the JSON payload
-    //5. Send POST request and wait for response
-    //6. Decode the returned JSON from the server to get ChatGPT's response
-    //7. Update the database with 2 new messages: user's and ChatGPT's
-
-    Map<String, String> chat_history = {};
-
-    // Create the payload.
-    /*
-    Map<String, String>
-    {
-      "User": "MESSAGE_1",
-      "ChatGPT": "MESSAGE_2",
+    Map<String, String>? messageHistory = await getMessageHistory();
+    if (messageHistory == null) {
+      return;
     }
-    */
 
+    // 3. Take the user's new message (which has not been saved yet), and add it
+    // to the chat history Map made in step 2.
+    messageHistory["${messageHistory.length}_User"] = _bodyController.text;
+
+    //4. Send the chat history Map in the JSON payload
     var payload = {
-      "HISTORY": currentFormResponse["GOAL"].toString(),
+      "HISTORY": messageHistory,
     };
     var body = json.encode(payload);
 
+    //5. Send POST request and wait for response
     try {
       var response = await http.post(
-        url,
+        Uri.parse('https://sereni-server.onrender.com/get_advice/'),
         headers: {
           'Content-Type': 'application/json',
           // Add any additional headers if needed
@@ -67,8 +88,11 @@ class _EditChatPageState extends State<ChatPage> {
         body: body,
       );
       if (response.statusCode == 200) {
-        // Decode the response. This is a dictionary of String to dynamics
-        var jsonResponse = json.decode(response.body);
+        //6. Decode the returned JSON from the server to get ChatGPT's response
+        messageHistory["${messageHistory.length}_ChatGPT"] = response.body;
+
+        //7. Update the database with 2 new messages: user's and ChatGPT's
+
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
@@ -104,7 +128,7 @@ class _EditChatPageState extends State<ChatPage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      var messages = snapshot.data;
+                      List<MessageModel> messages = snapshot.data!;
                       return ListView.builder(
                         controller: _scrollController,
                         reverse: false,
@@ -154,43 +178,7 @@ class _EditChatPageState extends State<ChatPage> {
                               fontSize: 20,
                             ),
                           ),
-                          onPressed: () async {
-                            if (widget.title == 'Person') {
-                              final message = {
-                                'message': _bodyController.text,
-                                'user': DatabaseHandler.getUid(),
-                                'timestamp': DateTime.now(),
-                              };
-                              _bodyController.clear();
-                              setState(() => _firestore
-                                      .collection('Chat Rooms')
-                                      .doc(widget.cid)
-                                      .update({
-                                    "messages": FieldValue.arrayUnion([message])
-                                  }));
-                            } else if (widget.title == 'AI') {
-                              final message = {
-                                'message': _bodyController.text,
-                                'user': DatabaseHandler.getUid(),
-                                'timestamp': DateTime.now(),
-                              };
-                              _bodyController.clear();
-
-                              final messageAI = {
-                                'message': answer,
-                                'user': 'AI',
-                                'timestamp': DateTime.now(),
-                              };
-
-                              setState(() => _firestore
-                                      .collection('Chat Rooms')
-                                      .doc(widget.cid)
-                                      .update({
-                                    "messages": FieldValue.arrayUnion(
-                                        [message, messageAI])
-                                  }));
-                            }
-                          },
+                          onPressed: sendPostRequest,
                           child: const Icon(Icons.arrow_upward),
                         ),
                       ],

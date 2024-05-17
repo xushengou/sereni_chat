@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project/databases/database_handler.dart';
 import 'package:project/screens/chat_room.dart';
-import 'package:project/screens/home.dart';
-import 'package:project/screens/settings.dart';
 import '../color_const.dart';
 import '../widgets/list_box_widget.dart';
 
@@ -202,129 +200,127 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
             ),
           ),
         ),
-        body: Expanded(
-          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _firestore.collection("Chat Rooms").snapshots(),
-            builder: (BuildContext context,
-                AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+        body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: _firestore.collection("Chat Rooms").snapshots(),
+          builder: (BuildContext context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
 
-              var myChat = DatabaseHandler.getUid();
-              // Extract chats list from Firestore snapshot
-              List<List<String>?>? chats = snapshot.data!.docs
-                  .map<List<String>?>((doc) {
-                    var uid1 = doc['uid1'];
-                    var uid2 = doc['uid2'];
-                    // to see if you are getting the current user
-                    // print(myChat)
-                    // print uids to check if you are getting the right values
-                    // print(uid1);
-                    // print(uid2);
-                    // check if they are not null
-                    if (uid1 != null && uid2 != null) {
-                      if (uid2 != 'AI' && (uid1 == myChat || uid2 == myChat)) {
-                        return ['Person', doc.id];
-                      } else if (uid2 == 'AI' && uid1 == myChat) {
-                        return ['AI', doc.id];
-                      }
+            var myChat = DatabaseHandler.getUid();
+            // Extract chats list from Firestore snapshot
+            List<List<String>?>? chats = snapshot.data!.docs
+                .map<List<String>?>((doc) {
+                  var uid1 = doc['uid1'];
+                  var uid2 = doc['uid2'];
+                  // to see if you are getting the current user
+                  // print(myChat)
+                  // print uids to check if you are getting the right values
+                  // print(uid1);
+                  // print(uid2);
+                  // check if they are not null
+                  if (uid1 != null && uid2 != null) {
+                    if (uid2 != 'AI' && (uid1 == myChat || uid2 == myChat)) {
+                      return ['Person', doc.id];
+                    } else if (uid2 == 'AI' && uid1 == myChat) {
+                      return ['AI', doc.id];
                     }
-                    return null;
-                    // get rid of null values so they don't go into chats,
-                    // if they go into chats you get red screen.
-                  })
-                  .where((chat) => chat != null)
-                  .toList()
-                  .cast<List<String>?>();
-              // a lot of ! and ? when using chats indexes
-              return ListView.builder(
-                itemCount: chats.length,
-                itemBuilder: (context, index) {
-                  return Dismissible(
-                    key: Key(chats[index]![1]),
-                    confirmDismiss: (direction) async {
-                      final bool res = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: Text(
-                              "Are you sure you want to delete ${chats[index]?[0]}?",
-                              style: const TextStyle(color: white),
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text(
-                                  "Cancel",
-                                  style: TextStyle(color: white),
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context)
-                                      .pop(false); // Return false when canceled
-                                },
-                              ),
-                              TextButton(
-                                child: const Text(
-                                  "Delete",
-                                  style: TextStyle(color: red),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    // Delete the chat document from Firestore
-                                    _firestore
-                                        .collection("Chat Rooms")
-                                        .doc(chats[index]?[1])
-                                        .delete();
-                                  });
-                                  Navigator.of(context)
-                                      .pop(true); // Return true when deleted
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                      return res;
-                    },
-                    background: Container(
-                      color: red, // Background color when swiping
-                      alignment: Alignment.centerRight,
-                      child: const Padding(
-                        padding: EdgeInsets.only(right: 20.0),
-                        child: Icon(
-                          Icons.delete,
-                          color: white,
-                        ),
-                      ),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChatPage(
-                              cid: chats[index]![1],
-                              title: chats[index]![0],
-                            ),
+                  }
+                  return null;
+                  // get rid of null values so they don't go into chats,
+                  // if they go into chats you get red screen.
+                })
+                .where((chat) => chat != null)
+                .toList()
+                .cast<List<String>?>();
+            // a lot of ! and ? when using chats indexes
+            return ListView.builder(
+              itemCount: chats.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  key: Key(chats[index]![1]),
+                  confirmDismiss: (direction) async {
+                    final bool res = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          content: Text(
+                            "Are you sure you want to delete ${chats[index]?[0]}?",
+                            style: const TextStyle(color: white),
                           ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(color: white),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pop(false); // Return false when canceled
+                              },
+                            ),
+                            TextButton(
+                              child: const Text(
+                                "Delete",
+                                style: TextStyle(color: red),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  // Delete the chat document from Firestore
+                                  _firestore
+                                      .collection("Chat Rooms")
+                                      .doc(chats[index]?[1])
+                                      .delete();
+                                });
+                                Navigator.of(context)
+                                    .pop(true); // Return true when deleted
+                              },
+                            ),
+                          ],
                         );
                       },
-                      child: ListBoxWidget(
-                        title: '${chats[index]?[1]}',
-                        date: "03/19/2024",
-                        username: _displayName,
-                        marginVal: 5.0,
+                    );
+                    return res;
+                  },
+                  background: Container(
+                    color: red, // Background color when swiping
+                    alignment: Alignment.centerRight,
+                    child: const Padding(
+                      padding: EdgeInsets.only(right: 20.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: white,
                       ),
                     ),
-                  );
-                },
-              );
-            },
-          ),
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(
+                            cid: chats[index]![1],
+                            title: chats[index]![0],
+                          ),
+                        ),
+                      );
+                    },
+                    child: ListBoxWidget(
+                      title: '${chats[index]?[1]}',
+                      date: "03/19/2024",
+                      username: _displayName,
+                      marginVal: 5.0,
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );
