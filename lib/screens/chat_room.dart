@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:project/color_const.dart';
 import 'package:project/databases/database_handler.dart';
+import 'package:project/misc.dart';
 import '../models/message_model.dart';
 import '../widgets/chattxt_widget.dart';
 import 'package:intl/intl.dart';
@@ -35,7 +36,7 @@ class _EditChatPageState extends State<ChatPage> {
           return MessageModel(
             message: message['message'] ?? '',
             user: message['user'] ?? "",
-            timestamp: (message['timestamp'] as Timestamp).toDate() ?? DateTime.now(),
+            timestamp: DateTime.fromMillisecondsSinceEpoch(message["timestamp"]) ?? DateTime.now(),
           );
         }).toList();
 
@@ -55,6 +56,35 @@ class _EditChatPageState extends State<ChatPage> {
     );
   }
 
+  Future<void> addNewMessages(String userMessage, String aiMessage, DateTime userTime, DateTime aiTime) async {
+    final db = FirebaseFirestore.instance;
+    final docRef = db.collection('Chat Rooms').doc(widget.cid);
+    return docRef.get().then((DocumentSnapshot doc) {
+      final data = doc.data() as Map<String, dynamic>; // Gives you the document as a Map
+      final List<dynamic> messagesData = data['messages'];
+
+      messagesData.add({
+        "message": userMessage,
+        "timestamp": userTime.millisecondsSinceEpoch,
+        "user": getUID()
+      });
+
+      messagesData.add({
+        "message": aiMessage,
+        "timestamp": aiTime.millisecondsSinceEpoch,
+        "user": "AI"
+      });
+
+      docRef.update({
+        "messages": messagesData
+      });
+    },
+      onError: (e) {
+        print("Error getting document: $e");
+      },
+    );
+  }
+
   /// Sends a POST request to the server.
   Future<void> sendPostRequest() async {
     // 1. Starts when the user writes a message and taps on the send button
@@ -70,6 +100,7 @@ class _EditChatPageState extends State<ChatPage> {
     // 3. Take the user's new message (which has not been saved yet), and add it
     // to the chat history Map made in step 2.
     messageHistory["${messageHistory.length}_User"] = _bodyController.text;
+    DateTime userTime = DateTime.now();
 
     //4. Send the chat history Map in the JSON payload
     var payload = {
@@ -90,15 +121,21 @@ class _EditChatPageState extends State<ChatPage> {
       if (response.statusCode == 200) {
         //6. Decode the returned JSON from the server to get ChatGPT's response
         messageHistory["${messageHistory.length}_ChatGPT"] = response.body;
+        DateTime aiTime = DateTime.now();
 
         //7. Update the database with 2 new messages: user's and ChatGPT's
-
+        addNewMessages(_bodyController.text, response.body, userTime, aiTime);
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
     } catch (e) {
       print('Error: $e');
     }
+  }
+
+  Future<Map<String, dynamic>?> loadChat() async {
+    final db = FirebaseFirestore.instance;
+    return (await db.collection("Chat Rooms").doc(widget.cid).get()).data();
   }
 
   @override
@@ -121,38 +158,44 @@ class _EditChatPageState extends State<ChatPage> {
             child: Column(
               children: [
                 Expanded(
-                  child: StreamBuilder<List<MessageModel>>(
-                    // inside the <> you enter the type of your stream
-                    stream: DatabaseHandler.getMessages(widget.cid),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      List<MessageModel> messages = snapshot.data!;
-                      return ListView.builder(
-                        controller: _scrollController,
-                        reverse: false,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 20,
-                        ),
-                        itemCount: messages != null ? messages.length : 0,
-                        itemBuilder: (context, index) {
-                          if (messages == null || messages.isEmpty) {
-                            return Container();
-                          }
-                          return MessageBubble(
-                            message: messages[index].message,
-                            isMe:
-                                messages[index].user == DatabaseHandler.getUid()
+                child: FutureBuilder(
+                    future: loadChat(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        Map<String, dynamic>? chatData = snapshot.data;
+                        if (chatData != null) { // Successfully loaded data
+                          List<dynamic> messages = chatData["messages"];
+
+                          return ListView.builder(
+                            controller: _scrollController,
+                            reverse: false,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 20,
+                            ),
+                            itemCount: messages != null ? messages.length : 0,
+                            itemBuilder: (context, index) {
+                              if (messages == null || messages.isEmpty) {
+                                return Container();
+                              }
+                              return MessageBubble(
+                                message: messages[index]["message"],
+                                isMe:
+                                messages[index]["user"] == DatabaseHandler.getUid()
                                     ? true
                                     : false,
-                            timestamp: messages[index].timestamp,
+                                timestamp: DateTime.fromMillisecondsSinceEpoch(messages[index]["timestamp"]),
+                              );
+                            },
                           );
-                        },
-                      );
+                        } else { // Problem loading data
+                          return const Text("Error loading data");
+                        }
+                      } else { // Loading data
+                        return const Text("loading...");
+                      }
                     },
-                  ),
+                  )
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
