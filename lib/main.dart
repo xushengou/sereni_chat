@@ -5,6 +5,7 @@ import 'package:project/screens/gratefulness.dart';
 import 'package:project/screens/login.dart';
 import 'package:project/screens/sign_up.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:project/screens/splash_screen.dart';
 import 'package:project/themes.dart';
 import 'firebase_options.dart';
 
@@ -22,17 +23,18 @@ class MyApp extends StatelessWidget {
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext splashScreen) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Test',
       theme: lightTheme,
-      initialRoute: 'loginPage',
+      initialRoute: 'splashScreen',
       routes: {
         'loginPage': (context) => const LoginPage(),
         'signUpPage': (context) => const SignUpPage(),
         'gratefulnessPage': (context) => const GratefulnessPage(),
         'navPage': (context) => const Navbar(),
+        "splashScreen": (context) => SplashPage(),
       },
     );
   }

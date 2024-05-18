@@ -22,6 +22,11 @@ class _NavbarState extends State<Navbar> {
             currentPageIndex = index;
           });
         },
+        indicatorShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(10.0),
+          ),
+        ),
         backgroundColor: Theme.of(context).colorScheme.background,
         indicatorColor: Theme.of(context).colorScheme.primary,
         selectedIndex: currentPageIndex,

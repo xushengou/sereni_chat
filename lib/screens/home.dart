@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
         title: Padding(
           padding: const EdgeInsets.only(left: 5.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "Home",
@@ -123,56 +123,26 @@ class _HomePageState extends State<HomePage> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20.0),
                       child: Text(
-                        "How's your day?",
-                        style: Theme.of(context).textTheme.headlineLarge,
+                        DateTime.now().hour < 12
+                            ? "Good morning, $_displayName"
+                            : "Good afternoon, $_displayName",
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
                     ),
                   ),
-                  ListTile(
-                    title: Text(
-                      dailyOptions[0],
-                      style: Theme.of(context).textTheme.headlineSmall,
+                  Container(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            boxWidget(
+                              title: "Goals",
+                            ),
+                          ],
+                        )
+                      ],
                     ),
-                    leading: Radio<String>(
-                      value: dailyOptions[0],
-                      groupValue: _dailyValue,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _dailyValue = value;
-                        });
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: Text(
-                      dailyOptions[1],
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    leading: Radio<String>(
-                      value: dailyOptions[1],
-                      groupValue: _dailyValue,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _dailyValue = value;
-                        });
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: Text(
-                      dailyOptions[2],
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    leading: Radio<String>(
-                      value: dailyOptions[2],
-                      groupValue: _dailyValue,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _dailyValue = value;
-                        });
-                      },
-                    ),
-                  ),
+                  )
                 ],
               ),
               const SizedBox(
@@ -189,20 +159,23 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                         context,
                         PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) => const GratefulnessPage(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child){
-                            var begin = Offset(1.0, 1.0);
-                            var end = Offset.zero;
-                            var curve = Curves.ease;
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const GratefulnessPage(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              var begin = Offset(1.0, 1.0);
+                              var end = Offset.zero;
+                              var curve = Curves.ease;
 
-                            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
 
-                            return SlideTransition(
-                              position: animation.drive(tween),
-                              child: child,
-                            );
-                          }
-                        ),
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            }),
                       );
                     },
                     style: OutlinedButton.styleFrom(
@@ -255,6 +228,54 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class boxWidget extends StatelessWidget {
+  final String title;
+
+  const boxWidget({
+    super.key,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const GratefulnessPage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                var begin = const Offset(1.0, 0.0);
+                var end = Offset.zero;
+                var curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              }),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        padding: const EdgeInsets.all(20.0),
+        child: Text(
+          title,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
       ),
     );
