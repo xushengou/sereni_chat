@@ -220,7 +220,7 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
                     ),
                     icon: const Icon(
                       Icons.add,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                     iconSize: 40.0,
                   ),
@@ -229,146 +229,144 @@ class _ChatNavScreenState extends State<ChatNavScreen> {
             ),
           ),
         ),
-        body: Expanded(
-          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _firestore.collection("Chat Rooms").snapshots(),
-            builder: (BuildContext context,
-                AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+        body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: _firestore.collection("Chat Rooms").snapshots(),
+          builder: (BuildContext context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
 
-              var myChat = DatabaseHandler.getUid();
-              // Extract chats list from Firestore snapshot
-              List<List<String>?>? chats = snapshot.data!.docs
-                  .map<List<String>?>((doc) {
-                    var uid1 = doc['uid1'];
-                    var uid2 = doc['uid2'];
-                    // to see if you are getting the current user
-                    // print(myChat)
-                    // print uids to check if you are getting the right values
-                    // print(uid1);
-                    // print(uid2);
-                    // check if they are not null
-                    if (uid1 != null && uid2 != null) {
-                      if (uid2 != 'AI' && (uid1 == myChat || uid2 == myChat)) {
-                        return ['Person', doc.id];
-                      } else if (uid2 == 'AI' && uid1 == myChat) {
-                        return ['AI', doc.id];
-                      }
+            var myChat = DatabaseHandler.getUid();
+            // Extract chats list from Firestore snapshot
+            List<List<String>?>? chats = snapshot.data!.docs
+                .map<List<String>?>((doc) {
+                  var uid1 = doc['uid1'];
+                  var uid2 = doc['uid2'];
+                  // to see if you are getting the current user
+                  // print(myChat)
+                  // print uids to check if you are getting the right values
+                  // print(uid1);
+                  // print(uid2);
+                  // check if they are not null
+                  if (uid1 != null && uid2 != null) {
+                    if (uid2 != 'AI' && (uid1 == myChat || uid2 == myChat)) {
+                      return ['Person', doc.id];
+                    } else if (uid2 == 'AI' && uid1 == myChat) {
+                      return ['AI', doc.id];
                     }
-                    return null;
-                    // get rid of null values so they don't go into chats,
-                    // if they go into chats you get red screen.
-                  })
-                  .where((chat) => chat != null)
-                  .toList()
-                  .cast<List<String>?>();
-              // a lot of ! and ? when using chats indexes
-              return ListView.builder(
-                itemCount: chats.length,
-                itemBuilder: (context, index) {
-                  return Dismissible(
-                    key: Key(chats[index]![1]),
-                    confirmDismiss: (direction) async {
-                      final bool res = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: Text(
-                              "Are you sure you want to delete ${chats[index]?[0]}?",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: Text(
-                                  "Cancel",
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context)
-                                      .pop(false); // Return false when canceled
-                                },
-                              ),
-                              TextButton(
-                                child: const Text(
-                                  "Delete",
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    // Delete the chat document from Firestore
-                                    _firestore
-                                        .collection("Chat Rooms")
-                                        .doc(chats[index]?[1])
-                                        .delete();
-                                  });
-                                  Navigator.of(context)
-                                      .pop(true); // Return true when deleted
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                      return res;
-                    },
-                    background: Container(
-                      color: Colors.red, // Background color when swiping
-                      alignment: Alignment.centerRight,
-                      child: const Padding(
-                        padding: EdgeInsets.only(right: 20.0),
-                        child: Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                              pageBuilder: (context, animation, secondaryAnimation) => ChatPage(
-                                cid: chats[index]![1],
-                                title: chats[index]![0],
-                              ),
-                              transitionsBuilder: (context, animation, secondaryAnimation, child){
-                                var begin = const Offset(0.0, 1.0);
-                                var end = Offset.zero;
-                                var curve = Curves.ease;
-
-                                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              }
+                  }
+                  return null;
+                  // get rid of null values so they don't go into chats,
+                  // if they go into chats you get red screen.
+                })
+                .where((chat) => chat != null)
+                .toList()
+                .cast<List<String>?>();
+            // a lot of ! and ? when using chats indexes
+            return ListView.builder(
+              itemCount: chats.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  key: Key(chats[index]![1]),
+                  confirmDismiss: (direction) async {
+                    final bool res = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          content: Text(
+                            "Are you sure you want to delete ${chats[index]?[0]}?",
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text(
+                                "Cancel",
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pop(false); // Return false when canceled
+                              },
+                            ),
+                            TextButton(
+                              child: const Text(
+                                "Delete",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  // Delete the chat document from Firestore
+                                  _firestore
+                                      .collection("Chat Rooms")
+                                      .doc(chats[index]?[1])
+                                      .delete();
+                                });
+                                Navigator.of(context)
+                                    .pop(true); // Return true when deleted
+                              },
+                            ),
+                          ],
                         );
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10.0, right: 10.0, top: 10.0),
-                        child: ListBoxWidget(
-                          title: '${chats[index]?[1]}',
-                          date: "03/19/2024",
-                          username: _displayName,
-                          marginVal: 5.0,
-                          maxLength: 12,
-                        ),
+                    );
+                    return res;
+                  },
+                  background: Container(
+                    color: Colors.red, // Background color when swiping
+                    alignment: Alignment.centerRight,
+                    child: const Padding(
+                      padding: EdgeInsets.only(right: 20.0),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.white,
                       ),
                     ),
-                  );
-                },
-              );
-            },
-          ),
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => ChatPage(
+                              cid: chats[index]![1],
+                              title: chats[index]![0],
+                            ),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child){
+                              var begin = const Offset(0.0, 1.0);
+                              var end = Offset.zero;
+                              var curve = Curves.ease;
+
+                              var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            }
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10.0, right: 10.0, top: 10.0),
+                      child: ListBoxWidget(
+                        title: '${chats[index]?[1]}',
+                        date: (chats[index]?[0] == "AI")? "AI": "Another User",
+                        username: _displayName,
+                        marginVal: 5.0,
+                        maxLength: 12,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );

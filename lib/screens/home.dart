@@ -93,17 +93,14 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Padding(
-          padding: const EdgeInsets.only(left: 5.0),
-          child: Row(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Home",
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-            ],
-          ),
+        title: Row(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Home",
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
+          ],
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
@@ -115,34 +112,15 @@ class _HomePageState extends State<HomePage> {
             children: [
               Column(
                 children: [
-                  const SizedBox(
-                    height: 15.0,
-                  ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: Text(
-                        DateTime.now().hour < 12
-                            ? "Good morning, $_displayName"
-                            : "Good afternoon, $_displayName",
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
+                    child: Text(
+                      DateTime.now().hour < 12
+                          ? "Good morning, $_displayName"
+                          : "Good afternoon, $_displayName",
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
                   ),
-                  Container(
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            boxWidget(
-                              title: "Goals",
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  )
                 ],
               ),
               const SizedBox(
@@ -213,12 +191,9 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8),
                         itemCount: dailyQuotes.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return SizedBox(
-                            height: 50,
-                            child: Text(
-                              '${index + 1}) ${dailyQuotes[index]}',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
+                          return Text(
+                            '${index + 1}) ${dailyQuotes[index]}',
+                            style: Theme.of(context).textTheme.titleMedium,
                           );
                         },
                       ),

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:project/databases/database_handler.dart';
+import '../misc.dart';
 import '../models/message_model.dart';
 import '../widgets/text_box_widget.dart';
 import 'package:intl/intl.dart';
@@ -25,39 +26,99 @@ class _EditChatPageState extends State<ChatPage> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<dynamic> getMessageHistory() async {
+    final db = FirebaseFirestore.instance;
+    final docRef = db.collection('Chat Rooms').doc(widget.cid);
+    return docRef.get().then((DocumentSnapshot doc) {
+      final data = doc.data() as Map<String, dynamic>; // Gives you the document as a Map
+      final List<dynamic> messagesData = data['messages'];
+
+      List<MessageModel> messages = messagesData.map((message) {
+        return MessageModel(
+          message: message['message'] ?? '',
+          user: message['user'] ?? "",
+          timestamp: DateTime.fromMillisecondsSinceEpoch(message["timestamp"]) ?? DateTime.now(),
+        );
+      }).toList();
+
+      Map<String, String> chatHistory = {};
+      for (int i = 0; i < messages.length; i++) {
+        MessageModel message = messages.elementAt(i);
+        String userType = message.user == "AI"? "ChatGPT": "User";
+        chatHistory["${i}_$userType"] = message.message;
+      }
+
+      return chatHistory;
+    },
+      onError: (e) {
+        print("Error getting document: $e");
+        return null;
+      },
+    );
+  }
+
+  Future<void> addNewMessages(String userMessage, String aiMessage, DateTime userTime, DateTime aiTime) async {
+    final db = FirebaseFirestore.instance;
+    final docRef = db.collection('Chat Rooms').doc(widget.cid);
+    return docRef.get().then((DocumentSnapshot doc) {
+      final data = doc.data() as Map<String, dynamic>; // Gives you the document as a Map
+      final List<dynamic> messagesData = data['messages'];
+
+      messagesData.add({
+        "message": userMessage,
+        "timestamp": userTime.millisecondsSinceEpoch,
+        "user": getUID()
+      });
+
+      messagesData.add({
+        "message": aiMessage,
+        "timestamp": aiTime.millisecondsSinceEpoch,
+        "user": "AI"
+      });
+
+      docRef.update({
+        "messages": messagesData
+      });
+
+      setState(() {
+
+      });
+    },
+      onError: (e) {
+        print("Error getting document: $e");
+      },
+    );
+  }
+
   /// Sends a POST request to the server.
   Future<void> sendPostRequest() async {
-    var url = Uri.parse('https://sereni-server.onrender.com/get_advice');
+    // 1. Starts when the user writes a message and taps on the send button
+    // See send button.
 
-    //1. Starts when the user writes a message and taps on the send button
-    //2. Get the chat history between the user and ChatGPT so far based on
+    // 2. Get the chat history between the user and ChatGPT so far based on
     // what is in the database
-    //3. Take the user's new message (which has not been saved yet), and add it
-    // to the chat history Map made in step 2.
-    //4. Send the chat history Map in the JSON payload
-    //5. Send POST request and wait for response
-    //6. Decode the returned JSON from the server to get ChatGPT's response
-    //7. Update the database with 2 new messages: user's and ChatGPT's
-
-    Map<String, String> chat_history = {};
-
-    // Create the payload.
-    /*
-    Map<String, String>
-    {
-      "User": "MESSAGE_1",
-      "ChatGPT": "MESSAGE_2",
+    Map<String, String>? messageHistory = await getMessageHistory();
+    if (messageHistory == null) {
+      return;
     }
-    */
 
+    // 3. Take the user's new message (which has not been saved yet), and add it
+    // to the chat history Map made in step 2.
+    messageHistory["${messageHistory.length}_User"] = _bodyController.text;
+    DateTime userTime = DateTime.now();
+
+    //4. Send the chat history Map in the JSON payload
     var payload = {
-      "HISTORY": chat_history.toString(),
+      "HISTORY": messageHistory,
     };
     var body = json.encode(payload);
 
+    print("SENDING REQUEST: ${payload}");
+
+    //5. Send POST request and wait for response
     try {
       var response = await http.post(
-        url,
+        Uri.parse('https://sereni-server.onrender.com/get_advice/'),
         headers: {
           'Content-Type': 'application/json',
           // Add any additional headers if needed
@@ -65,14 +126,25 @@ class _EditChatPageState extends State<ChatPage> {
         body: body,
       );
       if (response.statusCode == 200) {
-        // Decode the response. This is a dictionary of String to dynamics
-        var jsonResponse = json.decode(response.body);
+        print("GOT RESPONSE: ${response.body}");
+
+        //6. Decode the returned JSON from the server to get ChatGPT's response
+        messageHistory["${messageHistory.length}_ChatGPT"] = response.body;
+        DateTime aiTime = DateTime.now();
+
+        //7. Update the database with 2 new messages: user's and ChatGPT's
+        addNewMessages(_bodyController.text, response.body, userTime, aiTime);
       } else {
         print('Request failed with status: ${response.statusCode}');
       }
     } catch (e) {
       print('Error: $e');
     }
+  }
+
+  Future<Map<String, dynamic>?> loadChat() async {
+    final db = FirebaseFirestore.instance;
+    return (await db.collection("Chat Rooms").doc(widget.cid).get()).data();
   }
 
   @override
@@ -93,38 +165,44 @@ class _EditChatPageState extends State<ChatPage> {
             child: Column(
               children: [
                 Expanded(
-                  child: StreamBuilder<List<MessageModel>>(
-                    // inside the <> you enter the type of your stream
-                    stream: DatabaseHandler.getMessages(widget.cid),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      var messages = snapshot.data;
-                      return ListView.builder(
-                        controller: _scrollController,
-                        reverse: false,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 20,
-                        ),
-                        itemCount: messages != null ? messages.length : 0,
-                        itemBuilder: (context, index) {
-                          if (messages == null || messages.isEmpty) {
-                            return Container();
+                    child: FutureBuilder(
+                      future: loadChat(),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (snapshot.hasData) {
+                          Map<String, dynamic>? chatData = snapshot.data;
+                          if (chatData != null) { // Successfully loaded data
+                            List<dynamic> messages = chatData["messages"];
+
+                            return ListView.builder(
+                              controller: _scrollController,
+                              reverse: false,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 20,
+                              ),
+                              itemCount: messages != null ? messages.length : 0,
+                              itemBuilder: (context, index) {
+                                if (messages == null || messages.isEmpty) {
+                                  return Container();
+                                }
+                                return MessageBubble(
+                                  message: messages[index]["message"],
+                                  isMe:
+                                  messages[index]["user"] == DatabaseHandler.getUid()
+                                      ? true
+                                      : false,
+                                  timestamp: DateTime.fromMillisecondsSinceEpoch(messages[index]["timestamp"]),
+                                );
+                              },
+                            );
+                          } else { // Problem loading data
+                            return const Text("Error loading data");
                           }
-                          return MessageBubble(
-                            message: messages[index].message,
-                            isMe:
-                                messages[index].user == DatabaseHandler.getUid()
-                                    ? true
-                                    : false,
-                            timestamp: messages[index].timestamp,
-                          );
-                        },
-                      );
-                    },
-                  ),
+                        } else { // Loading data
+                          return const Text("loading...");
+                        }
+                      },
+                    )
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -160,26 +238,7 @@ class _EditChatPageState extends State<ChatPage> {
                                     "messages": FieldValue.arrayUnion([message])
                                   }));
                             } else if (widget.title == 'AI') {
-                              final message = {
-                                'message': _bodyController.text,
-                                'user': DatabaseHandler.getUid(),
-                                'timestamp': DateTime.now(),
-                              };
-                              _bodyController.clear();
-
-                              final messageAI = {
-                                'message': answer,
-                                'user': 'AI',
-                                'timestamp': DateTime.now(),
-                              };
-
-                              setState(() => _firestore
-                                      .collection('Chat Rooms')
-                                      .doc(widget.cid)
-                                      .update({
-                                    "messages": FieldValue.arrayUnion(
-                                        [message, messageAI])
-                                  }));
+                              sendPostRequest();
                             }
                           },
                           child: Icon(

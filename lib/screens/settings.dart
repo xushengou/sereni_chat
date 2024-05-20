@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:settings_ui/settings_ui.dart';
+import 'package:project/misc.dart';
+import 'package:project/screens/settings_screens/account_management.dart';
+import 'package:project/screens/settings_screens/appearance.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -12,6 +14,80 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
 
+  Widget addSection(String name, Column body) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            name,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20.0,
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 10.0,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.0),
+            border: Border.all(color: Theme.of(context).colorScheme.primary),
+          ),
+          width: double.maxFinite,
+          child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: body
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget addDivider() {
+    return Divider(
+      color: Theme.of(context).colorScheme.background,
+    );
+  }
+
+  Widget makeSettingsLink(IconData icon, String name, Widget? destination) {
+    return GestureDetector(
+      onTap: (){
+        if (destination != null) {
+          navigateTo(context, destination);
+        }
+      },
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: Colors.black,
+            size: 30.0,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Text(
+              name,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 20.0,
+              ),
+            ),
+          ),
+          const Align(
+            alignment: Alignment.centerRight,
+            child: Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.black,
+              size: 30.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,16 +95,48 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(
+        title: const Text(
           "Settings",
-          style: Theme.of(context).textTheme.headlineLarge,
+          style: TextStyle(
+            fontSize: 30.0,
+          ),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           physics: const ScrollPhysics(),
-          child: Container(),
+          child: Column(
+            children: [
+              addSection(
+                "Account Settings",
+                Column(
+                  children: [
+                    makeSettingsLink(Icons.person, "Account", const AccountManagement()),
+                    // addDivider(),
+                    // makeSettingsLink(Icons.privacy_tip_outlined, "Privacy & Safety", null)
+                  ],
+                ),
+              ),
+
+              const SizedBox(
+                height: 20.0,
+              ),
+
+              // addSection(
+                  // "App Settings",
+                  // Column(
+                    // children: [
+                      // makeSettingsLink(Icons.palette, "Appearance", const Appearance()),
+                      // addDivider(),
+                      // makeSettingsLink(Icons.accessibility_new, "Accessibility", null),
+                      // addDivider(),
+                      // makeSettingsLink(Icons.translate_outlined, "Language", null),
+                    // ],
+                  // )
+              // )
+            ],
+          ),
         ),
       ),
     );
