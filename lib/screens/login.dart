@@ -26,7 +26,6 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               _logoName(context),
               _inputField(context),
-              _forgotPassword(context),
               _signUp(context),
             ],
           ),
@@ -109,16 +108,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         )
       ],
-    );
-  }
-
-  _forgotPassword(context) {
-    return TextButton(
-      onPressed: () {},
-      child: Text(
-        "Forgot password?",
-        style: Theme.of(context).textTheme.titleSmall,
-      ),
     );
   }
 
