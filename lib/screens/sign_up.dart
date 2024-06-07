@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project/screens/Navbar.dart';
 import 'package:project/screens/home.dart';
 import '../models/user_model.dart';
 import 'login.dart';
@@ -165,7 +166,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 )).then((value) {
                   Navigator.pop(context);
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const HomePage()));
+                      MaterialPageRoute(builder: (context) => const Navbar()));
                 });
               });
             } catch (e) {
