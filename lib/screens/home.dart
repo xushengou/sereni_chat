@@ -88,7 +88,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double boxDistance = (MediaQuery.of(context).size.width - 2*((MediaQuery.of(context).size.width - 20)/3))/6;
+    double boxDistance = (MediaQuery.of(context).size.width -
+            2 * ((MediaQuery.of(context).size.width - 20) / 3)) /
+        6;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -112,7 +114,6 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(30.0),
           child: Column(
             children: [
-
               // Four box of nav
               Column(
                 children: [
@@ -132,8 +133,8 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: (MediaQuery.of(context).size.width - 20)/3,
-                        height: (MediaQuery.of(context).size.width - 20)/3,
+                        width: (MediaQuery.of(context).size.width - 20) / 3,
+                        height: (MediaQuery.of(context).size.width - 20) / 3,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
@@ -143,9 +144,9 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) =>
-                                    const GratefulnessPage(),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        const GratefulnessPage(),
                                     transitionsBuilder: (context, animation,
                                         secondaryAnimation, child) {
                                       var begin = Offset(0.0, 1.0);
@@ -163,7 +164,8 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
                               side: const BorderSide(
@@ -179,11 +181,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
 
-                      SizedBox(width: boxDistance), // calculate the estimated width for the space between all four blocks, could use padding?
+                      SizedBox(
+                          width:
+                              boxDistance), // calculate the estimated width for the space between all four blocks, could use padding?
 
                       SizedBox(
-                        width: (MediaQuery.of(context).size.width - 20)/3,
-                        height: (MediaQuery.of(context).size.width - 20)/3,
+                        width: (MediaQuery.of(context).size.width - 20) / 3,
+                        height: (MediaQuery.of(context).size.width - 20) / 3,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
@@ -193,9 +197,9 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) =>
-                                    const GratefulnessPage(),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        const GratefulnessPage(),
                                     transitionsBuilder: (context, animation,
                                         secondaryAnimation, child) {
                                       var begin = Offset(0.0, 1.0);
@@ -213,7 +217,8 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
                               side: const BorderSide(
@@ -235,8 +240,8 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: (MediaQuery.of(context).size.width - 20)/3,
-                        height: (MediaQuery.of(context).size.width - 20)/3,
+                        width: (MediaQuery.of(context).size.width - 20) / 3,
+                        height: (MediaQuery.of(context).size.width - 20) / 3,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
@@ -246,9 +251,9 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) =>
-                                    const GratefulnessPage(),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        const GratefulnessPage(),
                                     transitionsBuilder: (context, animation,
                                         secondaryAnimation, child) {
                                       var begin = Offset(0.0, 1.0);
@@ -266,7 +271,8 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
                               side: const BorderSide(
@@ -282,11 +288,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
 
-                      SizedBox(width: boxDistance), // calculate the estimated width for the space between all four blocks, could use padding?
+                      SizedBox(
+                          width:
+                              boxDistance), // calculate the estimated width for the space between all four blocks, could use padding?
 
                       SizedBox(
-                        width: (MediaQuery.of(context).size.width - 20)/3,
-                        height: (MediaQuery.of(context).size.width - 20)/3,
+                        width: (MediaQuery.of(context).size.width - 20) / 3,
+                        height: (MediaQuery.of(context).size.width - 20) / 3,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
@@ -296,9 +304,9 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) =>
-                                    const GratefulnessPage(),
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        const GratefulnessPage(),
                                     transitionsBuilder: (context, animation,
                                         secondaryAnimation, child) {
                                       var begin = Offset(0.0, 1.0);
@@ -316,7 +324,8 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
                               side: const BorderSide(
